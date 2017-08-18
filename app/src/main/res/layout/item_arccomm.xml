@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="10dp"
+    android:padding="10dp"
+    android:background="@color/white">
+
+    <RelativeLayout
+        android:id="@+id/RlTtle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <ImageView
+            android:id="@+id/userIcon"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@mipmap/ic_launcher_round"/>
+
+        <TextView
+            android:id="@+id/userName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="AAAAAA"
+            android:layout_marginLeft="17dp"
+            android:layout_marginStart="17dp"
+            android:layout_alignParentTop="true"
+            android:layout_toRightOf="@+id/userIcon"
+            android:layout_toEndOf="@+id/userIcon"
+            android:textColor="@color/blue_trans"
+            android:textSize="@dimen/default_medium_text_size"/>
+
+        <TextView
+            android:id="@+id/userDate"
+            android:layout_marginLeft="17dp"
+            android:layout_marginStart="17dp"
+            android:layout_toRightOf="@id/userIcon"
+            android:layout_alignBottom="@id/userIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2014-11"
+            android:textSize="@dimen/default_tiny_text_size"
+            android:textColor="@color/gray_80"/>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/userCommon"
+        android:layout_marginTop="10dp"
+        android:layout_below="@+id/RlTtle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/default_small_text_size"
+        android:text="哈哈哈哈，瞬间国产杀马特风了...哈哈哈哈，瞬间国产杀马特风了...哈哈哈哈，瞬间国产杀马特风了..."/>
+
+</RelativeLayout>

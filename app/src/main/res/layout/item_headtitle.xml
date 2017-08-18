@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_centerVertical="true">
+
+    <LinearLayout
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+    <TextView
+        android:layout_marginLeft="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="分享"
+        android:textColor="@android:color/holo_blue_dark"/>
+
+        <View
+            android:layout_marginLeft="10dp"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/descgray"/>
+
+    <TextView
+        android:layout_marginLeft="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="福利"
+        android:textColor="@android:color/holo_orange_dark"/>
+    </LinearLayout>
+    <Button
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:button="@null"
+        android:background="@null"
+        android:text="换一批"
+        android:drawableRight="@drawable/ic_autorenew_black_12dp"/>
+</RelativeLayout>

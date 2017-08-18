@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">IN外设</string>
+
+    <string name="home_page">主页</string>
+    <string name="news">资讯</string>
+    <string name="evaluate">评测</string>
+    <string name="vedio">视频</string>
+    <string name="personal">个人</string>
+
+    <string name="longstringdemo">畅销的震撼者系列耳机再次进化，全新推出震撼者SHOCK 【进化版】 RGB电竞耳机！采用时尚轻便的简约设计，搭配耳目一新的灯光与皮质耳罩设计，带来身历其境的声音和绝佳舒适感。耳机本身搭载40mm钕磁铁驱动单体，能带来清晰通透的音效体验，耳罩上有7组预设色彩和2种照明效果模式(脉冲跳跃和单色脉冲模式)。此外，为了提升配戴舒适度，耳机采用自动调节头带设计与特制封闭式耳罩设计，实现最佳的人体工学舒适度。操作上则提供了可伸缩麦克风与快速操作钮，可边玩游戏边轻松操作音量、麦克风和灯光控制</string>
+    <string name="publisherdemo">小主意</string>
+    <string name="publisherdatedemo">2017-05-14</string>
+    <string name="titledemo">体验罗技G933旗舰游戏耳机</string>
+
+</resources>

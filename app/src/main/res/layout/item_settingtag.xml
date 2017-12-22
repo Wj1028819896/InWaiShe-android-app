@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:tag="rootLayout"
+    android:layout_width="match_parent"
+    android:layout_height="56dp"
+    android:layout_gravity="center_vertical"
+    android:gravity="center_vertical"
+    android:background="?android:attr/selectableItemBackground"
+    android:orientation="horizontal">
+    <ImageView
+        android:layout_marginLeft="20dp"
+        android:tag="iconLeft"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        app:srcCompat="@drawable/ic_settings_black_24dp"
+        android:layout_centerVertical="true"
+        android:visibility="invisible"
+        />
+
+    <TextView
+        android:tag="tvSettingTitle"
+        android:layout_marginLeft="20dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:singleLine="true"
+        android:text="@string/app_name"
+        android:textSize="@dimen/default_medium_text_size"
+        android:textColor="@color/itemTextTitle"
+        android:layout_centerVertical="true"/>
+
+    <TextView
+        android:tag="tvSettingDesc"
+        android:layout_width="0dp"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:gravity="right"
+        android:textColor="@color/itemTextDesc"
+        android:layout_centerVertical="true"
+        android:textSize="@dimen/default_tiny_text_size"/>
+
+    <FrameLayout
+        android:tag="flRightLayout"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_centerVertical="true">
+        <ImageView
+            android:tag="ivArrowRight"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/ic_keyboard_arrow_right_black_24dp"/>
+
+        <android.support.v7.widget.AppCompatCheckBox
+            android:tag="cboxSetting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:checked="false"/>
+
+        <android.support.v7.widget.SwitchCompat
+            android:tag="rightSwitch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:checked="false"/>
+
+    </FrameLayout>
+
+
+
+</LinearLayout>

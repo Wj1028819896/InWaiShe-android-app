@@ -173,6 +173,14 @@ public class IjkVideoView extends FrameLayout implements MediaController.MediaPl
      * 使用Android播放器
      */
     private boolean usingAndroidPlayer = false;
+
+    /**
+     * 设置是否使用Android播放器
+     * @param use
+     */
+    public void setUsingAndroidPlayer(boolean use){
+        this.usingAndroidPlayer = use;
+    }
     /**
      * 使用编解码器硬编码还是软编码，true 硬编码 false 为软编码
      */

@@ -1,74 +1,142 @@
-apply plugin: 'com.android.application'
+import java.lang.annotation.Annotation
 
+apply plugin: 'com.android.application'
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.2'
+    buildToolsVersion '26.0.0'
     defaultConfig {
         applicationId "com.inwaishe.app"
-        minSdkVersion 14
+        minSdkVersion 16
         targetSdkVersion 22
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
+//        jackOptions {
+//            enabled true
+//        }
+        vectorDrawables.useSupportLibrary = true
     }
+
+    signingConfigs {
+        release {
+            storeFile file('wangjing.jks')
+            storePassword 'Wj1028819896'
+            keyAlias 'wjpersonal'
+            keyPassword 'Wj1028819896'
+        }
+    }
+
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.release
+        }
+        debug {
+            signingConfig signingConfigs.release
         }
     }
 
+    configurations.all {
+        resolutionStrategy.force 'com.squareup.okhttp3:okhttp:3.4.1'
+        resolutionStrategy.force 'com.google.code.findbugs:jsr305:1.3.9'
+    }
+
+    compileOptions {
+//        sourceCompatibility JavaVersion.VERSION_1_8
+//        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    //react-native bundle --platform android --dev false --entry-file web/js/index.android.js --bundle-output app/src/main/assets/index.android.bundle --assets-dest app/src/main/res/
+//    tasks.findByName('preBuild').doLast {
+//        def res = "D:\\NODEJS\\nodejs\\node_global\\react-native.cmd bundle --platform android --dev false --entry-file $rootDir/../js/index.android.js --bundle-output $rootDir/app/src/main/assets/index.android.bundle --assets -dest $rootDir/app/src/main/res/"
+//                .execute().text.toString()
+//        println("Rn to assets $rootDir $res")
+//    }
 }
 
 dependencies {
-    compile fileTree(include: ['*.jar'], dir: 'libs')
+    //compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     //Lifecycles, LiveData,  ViewModel,
+
     //Room,
+
     //glide
+
     //jsoup
+
+    //required, enough for most devices.
+
+    //Other ABIs: optional
+
+    //ExoPlayer as IMediaPlayer: optional, experimental
+
+    //compile 'com.dou361.ijkplayer:jjdxm-ijkplayer:1.0.6'
+
+    //compile files('libs/ezmorph-1.0.3.jar')
+
+    //compile files('libs/json-lib-2.4-jdk15.jar')
+
+    compile files('libs/commons-beanutils-1.8.0.jar')
+    compile files('libs/commons-collections-3.1.jar')
+    compile files('libs/commons-lang-2.5.jar')
+    compile files('libs/commons-logging.jar')
+
+    compile project(path: ':jjdxm-ijkplayer')
+    //根据需要支持去拓展，在jjdxm-ijkplayer中默认加入了armv7a的了
+    compile 'com.dou361.ijkplayer-armv7a:jjdxm-ijkplayer-armv7a:1.0.0'
+    compile 'com.dou361.ijkplayer-armv5:jjdxm-ijkplayer-armv5:1.0.0'
+    compile 'com.dou361.ijkplayer-arm64:jjdxm-ijkplayer-arm64:1.0.0'
+    compile 'com.dou361.ijkplayer-x86:jjdxm-ijkplayer-x86:1.0.0'
+    compile 'com.dou361.ijkplayer-x86_64:jjdxm-ijkplayer-x86_64:1.0.0'
+    //bmob-sdk：Bmob的android sdk包，包含了Bmob的数据存储、文件等服务，以下是最新的bmob-sdk:
+
+    //implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
     compile 'com.android.support:recyclerview-v7:25.3.1'
     compile 'com.android.support:cardview-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
-    compile 'com.youth.banner:banner:1.4.9'
+    compile 'com.youth.banner:banner:1.4.10'
     compile 'android.arch.lifecycle:runtime:1.0.0-alpha1'
     compile 'android.arch.lifecycle:extensions:1.0.0-alpha1'
     compile 'android.arch.persistence.room:runtime:1.0.0-alpha1'
-    compile 'com.github.bumptech.glide:glide:4.0.0-RC1'
+    compile 'com.github.bumptech.glide:glide:4.1.1'
+    compile 'com.github.bumptech.glide:annotations:4.1.1'
     compile 'com.android.support:support-v4:25.3.1'
     compile 'org.jsoup:jsoup:1.10.3'
     compile 'com.flyco.tablayout:FlycoTabLayout_Lib:2.1.2@aar'
-    testCompile 'junit:junit:4.12'
-    //required, enough for most devices.
-    compile 'tv.danmaku.ijk.media:ijkplayer-java:0.8.2'
-    //compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.2'
-    //Other ABIs: optional
-    compile 'tv.danmaku.ijk.media:ijkplayer-armv5:0.8.2'
-    //compile 'tv.danmaku.ijk.media:ijkplayer-arm64:0.8.2'
-    compile 'tv.danmaku.ijk.media:ijkplayer-x86:0.8.2'
-    //compile 'tv.danmaku.ijk.media:ijkplayer-x86_64:0.8.2'
-    //ExoPlayer as IMediaPlayer: optional, experimental
-    compile 'tv.danmaku.ijk.media:ijkplayer-exo:0.8.2'
-    compile 'com.github.ctiao:DanmakuFlameMaster:0.5.6'
-    //compile 'com.dou361.ijkplayer:jjdxm-ijkplayer:1.0.6'
+
+//    compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.2'
+//    compile 'tv.danmaku.ijk.media:ijkplayer-arm64:0.8.2'
+//    compile 'tv.danmaku.ijk.media:ijkplayer-x86_64:0.8.2'
+//    compile 'tv.danmaku.ijk.media:ijkplayer-java:0.8.2'
+//    compile 'tv.danmaku.ijk.media:ijkplayer-armv5:0.8.2'
+//    compile 'tv.danmaku.ijk.media:ijkplayer-x86:0.8.2'
+    //compile 'tv.danmaku.ijk.media:ijkplayer-exo:0.8.2'
+    //compile 'com.github.ctiao:DanmakuFlameMaster:0.5.6'
     compile 'com.squareup.okhttp3:okhttp:3.2.0'
     compile 'com.squareup.okhttp3:logging-interceptor:3.2.0'
     compile 'com.facebook.stetho:stetho:1.3.1'
     compile 'com.facebook.stetho:stetho-okhttp3:1.3.1'
+    compile 'com.github.ybq:Android-SpinKit:1.1.0'
+    compile 'me.tatarka:gradle-retrolambda:3.2.5'
+    compile 'com.alibaba:fastjson:1.1.63.android'
+    //compile 'cn.bmob.android:bmob-sdk:3.5.5'
+
+    //compile 'cn.bmob.android:http-legacy:1.0'
+    compile 'com.kogitune:pre-lollipop-activity-transition:1.3.3'
+    compile 'com.facebook.react:react-native:0.49.+'
+    compile 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
+    //compile 'com.shuyu:GSYVideoPlayer:2.1.1'
+    testCompile 'junit:junit:4.12'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.1.1'
     annotationProcessor 'android.arch.lifecycle:compiler:1.0.0-alpha1'
     annotationProcessor 'android.arch.persistence.room:compiler:1.0.0-alpha1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.0.0-RC1'
-    compile files('libs/ezmorph-1.0.3.jar')
-    compile files('libs/json-lib-2.4-jdk15.jar')
-    //compile files('libs/commons-beanutils-1.8.0.jar')
-    //compile files('libs/commons-collections-3.2.1.jar')
-    compile files('libs/commons-lang-2.5.jar')
-    compile files('libs/commons-logging.jar')
-    compile project(path: ':jjdxm-ijkplayer')
-
+    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.4'
+    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 }

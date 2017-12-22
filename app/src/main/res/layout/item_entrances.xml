@@ -2,9 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="@color/white"
-    >
+    android:background="@color/bgcolor">
         <LinearLayout
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
@@ -19,7 +19,7 @@
                 <ImageView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/ic_keyboard_black_50dp"
+                    app:srcCompat="@drawable/ic_keyboard_black_50dp"
                     />
                 <TextView
                     android:layout_width="wrap_content"
@@ -37,7 +37,7 @@
                 <ImageView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/ic_mouse_black_50dp"
+                    app:srcCompat="@drawable/ic_mouse_black_50dp"
                     />
                 <TextView
                     android:layout_width="wrap_content"
@@ -55,7 +55,7 @@
                 <ImageView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/ic_devices_other_black_50dp"
+                    app:srcCompat="@drawable/ic_devices_other_black_50dp"
                     />
                 <TextView
                     android:layout_width="wrap_content"
@@ -73,7 +73,7 @@
                 <ImageView
                     android:layout_width="40dp"
                     android:layout_height="40dp"
-                    android:src="@drawable/ic_headset_black_50dp"
+                    app:srcCompat="@drawable/ic_headset_black_50dp"
                     />
                 <TextView
                     android:layout_width="wrap_content"
@@ -86,6 +86,6 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1px"
-        android:layout_marginBottom="5dp"
+        android:layout_marginTop="5dp"
         android:background="@drawable/shadow"/>
 </LinearLayout>

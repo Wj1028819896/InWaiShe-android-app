@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:qdx="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <android.support.v4.view.ViewPager
+        android:gravity="center_vertical"
+        android:layout_gravity="center_vertical"
+        android:id="@+id/vpEmotionSelect"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        >
+    </android.support.v4.view.ViewPager>
+    <com.inwaishe.app.framework.emotionkeyboard.widget.BezierRoundView
+        android:layout_gravity="center_horizontal"
+        android:id="@+id/pointIndicator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        qdx:color_bez="#fffe626d"
+        qdx:color_stroke="#ffaaaaaa"
+        qdx:color_touch="#fff"
+        qdx:radius="4dp" />
+</LinearLayout>

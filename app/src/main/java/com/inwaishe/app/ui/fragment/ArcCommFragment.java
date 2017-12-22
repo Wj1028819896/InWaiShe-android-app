@@ -14,6 +14,10 @@ import com.inwaishe.app.R;
 import com.inwaishe.app.adapter.CommonAdapter;
 import com.inwaishe.app.base.LazyFragment;
 import com.inwaishe.app.entity.mainpage.ArcCommInfo;
+import com.inwaishe.app.framework.arch.bus.XBus;
+import com.inwaishe.app.framework.arch.bus.XBusObserver;
+import com.inwaishe.app.framework.arch.bus.XBusThreadModel;
+import com.inwaishe.app.ui.UsrCommDetailActivity;
 import com.inwaishe.app.viewmodel.ArcDetailViewModel;
 
 import java.util.ArrayList;
@@ -59,6 +63,16 @@ public class ArcCommFragment extends LazyFragment {
         });
 
         lazyLoad();
+        /**
+         * 接收来自回复成功的事件
+         */
+        XBus.getInstance().observe(this, UsrCommDetailActivity.EVENT_REPLY_SUCCESS, new XBusObserver() {
+            @Override
+            public void onCall(Object var) {
+                isPrepared = true;
+                lazyLoad();
+            }
+        }).runOn(XBusThreadModel.mainThread());
 
     }
 

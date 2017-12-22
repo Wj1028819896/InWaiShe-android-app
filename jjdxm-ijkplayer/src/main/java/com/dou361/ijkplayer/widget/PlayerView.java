@@ -1050,6 +1050,17 @@ public class PlayerView {
     }
 
     /**
+     * 设置使用是否Android player
+     * @param use
+     * @return
+     */
+    public PlayerView setUseAndroidMediaplayer(boolean use){
+        if(videoView != null){
+            videoView.setUsingAndroidPlayer(use);
+        }
+        return this;
+    }
+    /**
      * 选择要播放的流
      */
     public PlayerView switchStream(int index) {

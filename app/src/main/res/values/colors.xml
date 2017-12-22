@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#333333</color>
-    <color name="colorPrimaryDark">#000000</color>
-    <color name="colorAccent">#FF4081</color>
 
     <color name="transparent100">#00000000</color>
     <color name="transparent80">#CC000000</color>
@@ -101,7 +98,30 @@
 
 
     <!--应用内颜色-->
-    <color name="bgcolor">@color/line_bg</color>
+    <color name="bgcolor">@color/gray_light_30</color>
+    <color name="colorPrimary">#333333</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">@color/holo_blue_dark</color>
+
+    <color name="itembg">@color/white</color>
+    <color name="itemTextTitle">@color/black</color>
+    <color name="itemTextDesc">@color/black_80</color>
+    <color name="itemTextDate">@color/descgray</color>
+
+    <color name="VectorIconColor">#FF000000</color>
+    <color name="VectorIconColorItem">@color/descgray</color>
+
+    <color name="itemSelected">@color/gray</color>
+    <color name="itemNormal">@color/white</color>
+
+
+    <color name="background_my_material_light">@color/material_grey_50</color>
+    <color name="background_my_material_grey">#ededed</color>
+    <color name="pureWhite">#ffffff</color>
+    <color name="primary_text">#212121</color>
+    <color name="textHint">#88888888</color>
+    <color name="iconCover">#cc979797</color>
+    <color name="iconCoverDark">#cc393939</color>
 
 
 </resources>

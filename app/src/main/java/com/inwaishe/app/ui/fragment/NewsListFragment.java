@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.inwaishe.app.R;
 import com.inwaishe.app.adapter.MainPagerAdapter;
 import com.inwaishe.app.adapter.NewsListAdapter;
@@ -49,7 +50,6 @@ public class NewsListFragment extends LazyFragment {
     @Override
     public void finishCreateView(Bundle state) {
         isPrepared = true;
-        initRecyclerView();
         Type = NewsListFragment.changeStringToType(getArguments().getString("TYPE"));
 
         Log.e(TAG,"finishCreateView()" + Type);
@@ -63,12 +63,29 @@ public class NewsListFragment extends LazyFragment {
                         Log.e(TAG,"onChanged" + Type);
                         if(newsListAdapter != null){
                             Log.e(TAG,"onChanged" + Type + " -> " + mainPageInfo.articleInfos.size());
+                            newsListAdapter.setLoadingMore(false);
+                            newsListAdapter.setLoadAll(mainPageInfo.isLoadAll);
                             newsListAdapter.notifyDataSetChanged();
+                            if(mainPageInfo.code < 0){
+                                Toast.makeText(getActivity(),"" + mainPageInfo.msg,Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 });
 
-        newsListAdapter = new NewsListAdapter(getActivity(),newsPagerViewModel.getNewsPageInfoLiveData().getValue().get(Type).getValue());
+        newsListAdapter = new NewsListAdapter(recyclerView,getActivity(),newsPagerViewModel.getNewsPageInfoLiveData().getValue().get(Type).getValue());
+        newsListAdapter.setOnLoadOrRefreshListener(new NewsListAdapter.OnLoadOrRefreshListener() {
+            @Override
+            public void onLoadMore() {
+                loadData();
+            }
+
+            @Override
+            public void onRefresh() {
+
+            }
+        });
+
         recyclerView.setAdapter(newsListAdapter);
 
         lazyLoad();
@@ -91,18 +108,6 @@ public class NewsListFragment extends LazyFragment {
         }
         loadData();
         isPrepared = false;
-    }
-
-    private void initRecyclerView() {
-
-        gridLayoutManager = new GridLayoutManager(getActivity(),2);
-        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                return 2;
-            }
-        });
-        recyclerView.setLayoutManager(gridLayoutManager);
     }
 
     @Override

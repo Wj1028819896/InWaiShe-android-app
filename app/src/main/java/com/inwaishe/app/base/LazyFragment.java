@@ -1,5 +1,6 @@
 package com.inwaishe.app.base;
 
+import android.arch.lifecycle.LifecycleActivity;
 import android.arch.lifecycle.LifecycleFragment;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
@@ -34,6 +35,13 @@ public abstract class LazyFragment extends LifecycleFragment{
         super.onViewCreated(view, savedInstanceState);
         finishCreateView(savedInstanceState);
     }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        isPrepared = false;
+    }
+
     /**
      * 初始化views
      *
@@ -80,4 +88,5 @@ public abstract class LazyFragment extends LifecycleFragment{
             onInvisible();
         }
     }
+
 }

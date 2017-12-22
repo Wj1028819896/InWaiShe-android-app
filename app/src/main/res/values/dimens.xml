@@ -2,10 +2,18 @@
 <resources>
 
     <!--common text size-->
+    <dimen name="default_tinyxxx_text_size">6sp</dimen>
+    <dimen name="default_tinyxx_text_size">8sp</dimen>
+    <dimen name="default_tinyx_text_size">10sp</dimen>
     <dimen name="default_tiny_text_size">12sp</dimen>
     <dimen name="default_small_text_size">14sp</dimen>
     <dimen name="default_medium_text_size">16sp</dimen>
     <dimen name="default_big_text_size">18sp</dimen>
     <dimen name="default_big_large_text_size">22sp</dimen>
+
+
+    <dimen name="cardViewElevation">4dp</dimen>
+    <dimen name="cardViewMargin">0dp</dimen>
+    <dimen name="statusBarHeight">0dp</dimen>
 
 </resources>

@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.inwaishe.app.ui.ArcDetaileActivity"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context="com.inwaishe.app.ui.ArcDetaileActivity"
+    android:fitsSystemWindows="false"
+    android:orientation="vertical">
+<android.support.design.widget.CoordinatorLayout
+
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"
+    android:fitsSystemWindows="false"
     android:background="@color/bgcolor">
     <android.support.design.widget.AppBarLayout
         android:id="@+id/AppBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fitsSystemWindows="true"
-        app:layout_scrollFlags="snap"
+        android:fitsSystemWindows="false"
         >
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/CollapsingToolbarLayout"
@@ -35,13 +41,53 @@
                 android:layout_height="200dp"
                 android:src="@color/gray"
                 android:scaleType="centerCrop"
-                app:layout_collapseMode="parallax"/>
+                app:layout_collapseMode="parallax"
+                android:contentDescription="TODO" />
+            <include
+                android:id="@+id/app_video_box"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                app:layout_collapseMode="pin"
+                android:visibility="gone"
+                layout="@layout/simple_player_view_player"/>
+            <com.inwaishe.app.widget.RipperSeziView
+                android:id="@+id/ripperView"
+                android:visibility="invisible"
+                android:background="@color/transparent100"
+                app:layout_collapseMode="parallax"
+                android:layout_width="match_parent"
+                android:layout_height="200dp" />
             <android.support.v7.widget.Toolbar
+                android:layout_marginTop="@dimen/statusBarHeight"
                 android:id="@+id/toolBar"
                 android:layout_width="match_parent"
                 android:layout_height="?actionBarSize"
                 app:layout_collapseMode="pin"
                 >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+                    <TextView
+                        android:id="@+id/toolBarTitle"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="40dp"
+                        android:layout_marginRight="40dp"
+                        android:maxLines="1"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/default_big_text_size"
+                        android:visibility="visible"
+                        android:text="文章标题"/>
+                    <android.support.v7.widget.ActionMenuView
+                        android:id="@+id/amv_toolbar"
+                        android:layout_gravity="right"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        />
+                </LinearLayout>
             </android.support.v7.widget.Toolbar>
         </android.support.design.widget.CollapsingToolbarLayout>
         <com.flyco.tablayout.SlidingTabLayout
@@ -54,16 +100,31 @@
             app:tl_indicator_corner_radius="1.5dp"
             app:tl_textSelectColor="@color/holo_blue_dark"
             app:tl_textUnselectColor="@color/holo_blue_dark">
-
         </com.flyco.tablayout.SlidingTabLayout>
     </android.support.design.widget.AppBarLayout>
-
-    <android.support.v4.view.ViewPager
-        android:id="@+id/vpContent"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:overScrollMode="never"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-    </android.support.v4.view.ViewPager>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/vpContent"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:overScrollMode="never"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        </android.support.v4.view.ViewPager>
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/fbtnPlay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:clickable="true"
+            app:elevation="6dp"
+            app:pressedTranslationZ="12dp"
+            app:srcCompat="@drawable/ic_play_arrow_black_24dp"
+            app:layout_anchor="@id/tabSlide"
+            app:layout_anchorGravity="top|end" />
 </android.support.design.widget.CoordinatorLayout>
+    <include
+        android:id="@+id/comment_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/common_bottom_arcdetail"
+        android:layout_alignParentBottom="true"/>
+</LinearLayout>

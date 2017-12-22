@@ -2,11 +2,78 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/bgcolor">
-        <android.support.v7.widget.RecyclerView
+        <com.inwaishe.app.widget.refreshView.RefreshRecyclerView
             android:id="@+id/rvMainPager"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/transparent100">
-        </android.support.v7.widget.RecyclerView>
+        </com.inwaishe.app.widget.refreshView.RefreshRecyclerView>
+        <FrameLayout
+            android:id="@+id/topBar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/transparent100"
+            android:clickable="true"
+            >
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:background="@color/transparent100">
+                        <View
+                            android:id="@+id/vTopbg01"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/statusBarHeight"
+                            android:alpha="1.0"
+                            android:background="@color/itembg"
+                            />
+                        <View
+                            android:id="@+id/vTopbg02"
+                            android:layout_width="match_parent"
+                            android:layout_height="?actionBarSize"
+                            android:alpha="1.0"
+                            android:background="@color/itembg"
+                            />
+                        <View
+                            android:id="@+id/vTopBottomLine"
+                            android:layout_marginBottom="0dp"
+                            android:layout_width="match_parent"
+                            android:layout_height="1px"
+                            android:background="@color/gray_80"/>
+                </LinearLayout>
+                <RelativeLayout
+                    android:layout_marginTop="@dimen/statusBarHeight"
+                    android:layout_width="match_parent"
+                    android:layout_height="?actionBarSize"
+                    android:gravity="center_vertical">
+                        <LinearLayout
+                            android:id="@+id/searchBar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentRight="true"
+                            android:layout_gravity="center_vertical"
+                            android:gravity="center_vertical"
+                            android:background="@drawable/corner_bg"
+                            android:layout_marginRight="20dp"
+                            android:layout_marginLeft="20dp"
+                            android:paddingLeft="20dp"
+                            android:paddingRight="20dp"
+                            android:paddingTop="4dp"
+                            android:paddingBottom="4dp">
+                                <android.support.v7.widget.AppCompatImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    app:srcCompat="@drawable/ic_search_black_24dp"
+                                    />
+                                <android.support.v7.widget.AppCompatTextView
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:text="搜索"
+                                    android:textSize="@dimen/default_small_text_size"
+                                    android:textColor="@color/itemTextDate"/>
+                        </LinearLayout>
+                </RelativeLayout>
+        </FrameLayout>
 </FrameLayout>

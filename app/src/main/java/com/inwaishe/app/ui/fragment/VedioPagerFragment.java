@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.bumptech.glide.Glide;
 import com.inwaishe.app.R;
 import com.inwaishe.app.adapter.VedioListAdapter;
 import com.inwaishe.app.base.LazyFragment;
@@ -41,17 +42,7 @@ public class VedioPagerFragment extends LazyFragment{
 
     }
 
-    private void initRecyclerView() {
 
-        gridLayoutManager = new GridLayoutManager(getActivity(),2);
-        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                return 1;
-            }
-        });
-        recyclerView.setLayoutManager(gridLayoutManager);
-    }
 
     @Override
     protected int getLayoutResId() {
@@ -62,19 +53,31 @@ public class VedioPagerFragment extends LazyFragment{
     public void finishCreateView(Bundle state) {
         isPrepared = true;
         isVisible = true;
-        initRecyclerView();
         vedioPagerViewModel = ViewModelProviders.of(getActivity()).get(VedioPagerViewModel.class);
         vedioPagerViewModel.init();
         vedioPagerViewModel.getMainPageInfoLiveData().observe(this, new Observer<MainPageInfo>() {
             @Override
             public void onChanged(@Nullable MainPageInfo mainPageInfo) {
                 if(vedioListAdapter != null){
+                    vedioListAdapter.setLoadingMore(false);
+                    vedioListAdapter.setLoadAll(mainPageInfo.isLoadAll);
                     vedioListAdapter.notifyDataSetChanged();
                 }
             }
         });
 
-        vedioListAdapter = new VedioListAdapter(getActivity(),vedioPagerViewModel.getMainPageInfoLiveData().getValue());
+        vedioListAdapter = new VedioListAdapter(recyclerView,getActivity(),vedioPagerViewModel.getMainPageInfoLiveData().getValue());
+        vedioListAdapter.setOnLoadOrRefreshListener(new VedioListAdapter.OnLoadOrRefreshListener() {
+            @Override
+            public void onLoadMore() {
+                loadData();
+            }
+
+            @Override
+            public void onRefresh() {
+
+            }
+        });
         recyclerView.setAdapter(vedioListAdapter);
         lazyLoad();
     }

@@ -30,7 +30,7 @@ ext {
 
 android {
     compileSdkVersion 25
-    buildToolsVersion "25.0.3"
+    buildToolsVersion '26.0.0'
     defaultConfig {
         //applicationId "com.inwaishe.app"
         minSdkVersion 14
@@ -46,13 +46,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+//        sourceCompatibility JavaVersion.VERSION_1_8
+//        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'tv.danmaku.ijk.media:ijkplayer-java:0.8.2'
-    compile 'com.dou361.ijkplayer-armv7a:jjdxm-ijkplayer-armv7a:1.0.0'
+    compile 'tv.danmaku.ijk.media:ijkplayer-exo:0.8.2'
     compile 'com.android.support:appcompat-v7:25.3.1'
     //compile rootProject.ext.jjdxm_v7
 }

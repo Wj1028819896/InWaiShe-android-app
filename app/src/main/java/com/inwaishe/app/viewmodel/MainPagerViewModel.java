@@ -5,14 +5,9 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 
-import com.inwaishe.app.entity.mainpage.BannerInfo;
+import com.inwaishe.app.dataprovider.DataProvider;
 import com.inwaishe.app.entity.mainpage.MainPageInfo;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-
-import java.io.IOException;
+import com.inwaishe.app.http.downloadfile.ThreadPollUtil;
 
 /**
  * Created by WangJing on 2017/8/9.
@@ -38,7 +33,34 @@ public class MainPagerViewModel extends AndroidViewModel {
     public void init(){
         mainPageInfoLiveData.setValue(new MainPageInfo());
     }
+    /**
+     *  增量加载
+     */
+    public void loadDataMore(){
+        //爬虫抓数据
+        Thread exe = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    MainPageInfo mainPageInfo = mainPageInfoLiveData.getValue();
+                    new DataProvider().upDataMainPageInfo(mainPageInfo);
+                    mainPageInfoLiveData.postValue(mainPageInfo);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    MainPageInfo mainPageInfo = mainPageInfoLiveData.getValue();
+                    mainPageInfo.code = -1;
+                    mainPageInfo.msg = "未知错误";
+                    mainPageInfoLiveData.postValue(mainPageInfo);
+                }
+            }
+        });
+        ThreadPollUtil.getInstance().exeCute(exe);
 
+    }
+
+    /**
+     * 刷新加载
+     */
     public void loadData(){
         //爬虫抓数据
         new Thread(new Runnable() {
@@ -46,10 +68,15 @@ public class MainPagerViewModel extends AndroidViewModel {
             public void run() {
                 try {
                     MainPageInfo mainPageInfo = mainPageInfoLiveData.getValue();
-                    mainPageInfo.pullDataJsoup();
+                    mainPageInfo.pageNum = 1;
+                    new DataProvider().upDataMainPageInfo(mainPageInfo);
                     mainPageInfoLiveData.postValue(mainPageInfo);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    MainPageInfo mainPageInfo = mainPageInfoLiveData.getValue();
+                    mainPageInfo.code = -1;
+                    mainPageInfo.msg = "未知错误";
+                    mainPageInfoLiveData.postValue(mainPageInfo);
                 }
             }
         }).start();

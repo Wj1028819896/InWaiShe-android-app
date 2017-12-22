@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+    <objectAnimator
+        android:propertyName="trimPathEnd"
+        android:valueFrom="0"
+        android:valueTo="1"
+        android:duration="2500"
+        android:repeatMode="reverse"
+        android:repeatCount="infinite"
+        android:valueType="floatType"
+        android:interpolator="@android:interpolator/linear">
+    </objectAnimator>
+    <objectAnimator
+        android:propertyName="trimPathStart"
+        android:valueFrom="1"
+        android:valueTo="0"
+        android:duration="2500"
+        android:repeatMode="reverse"
+        android:repeatCount="infinite"
+        android:valueType="floatType"
+        android:interpolator="@android:interpolator/linear">
+    </objectAnimator>
+    <objectAnimator
+        android:propertyName="strokeColor"
+        android:duration="1250"
+        android:valueFrom="@color/colorAccent"
+        android:valueTo="@color/red_trans"
+        android:repeatMode="reverse"
+        android:repeatCount="infinite"
+        android:valueType="colorType"
+        android:interpolator="@android:interpolator/linear">
+
+    </objectAnimator>
+</set>

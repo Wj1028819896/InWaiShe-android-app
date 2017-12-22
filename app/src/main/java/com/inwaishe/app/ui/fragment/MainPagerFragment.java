@@ -1,21 +1,42 @@
 package com.inwaishe.app.ui.fragment;
 
+import android.animation.ObjectAnimator;
+import android.animation.ValueAnimator;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.view.menu.MenuView;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.inwaishe.app.R;
 import com.inwaishe.app.adapter.MainPagerAdapter;
 import com.inwaishe.app.base.LazyFragment;
+import com.inwaishe.app.common.AppUtils;
 import com.inwaishe.app.entity.mainpage.MainPageInfo;
+import com.inwaishe.app.entity.mainpage.UserInfo;
+import com.inwaishe.app.framework.arch.bus.XBus;
+import com.inwaishe.app.framework.arch.bus.XBusObserver;
 import com.inwaishe.app.viewmodel.MainPagerViewModel;
 import com.inwaishe.app.widget.TitleItemDecoration;
+import com.inwaishe.app.widget.refreshView.RefreshListener;
+import com.inwaishe.app.widget.refreshView.RefreshRecyclerView;
+import com.inwaishe.app.widget.refreshView.RefrshHeaderViewComm;
 
 
 /**
@@ -26,15 +47,27 @@ import com.inwaishe.app.widget.TitleItemDecoration;
 public class MainPagerFragment extends LazyFragment {
 
     public static final String TAG = "MainPagerFragment";
-    private RecyclerView mRecyclerView;
+    private RefreshRecyclerView mRecyclerView;
     private MainPagerAdapter mainPagerAdapter;
-    private GridLayoutManager gridLayoutManager;
     private MainPagerViewModel mainPagerViewModel;
+    private View topViewBg01,topViewBg02,topViewBottomLine;
+    private FrameLayout topBar;
+    private LinearLayout searchBar;
+    private long totalDy = 0;
+    private int orignalSearchBarWidth = 0;
+    ValueAnimator animator;
+    private boolean isExpaned = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootview = super.onCreateView(inflater, container, savedInstanceState);
-        mRecyclerView = (RecyclerView) rootview.findViewById(R.id.rvMainPager);
+        mRecyclerView = (RefreshRecyclerView) rootview.findViewById(R.id.rvMainPager);
+        topViewBg01 = rootview.findViewById(R.id.vTopbg01);
+        topViewBg02 = rootview.findViewById(R.id.vTopbg02);
+        topViewBottomLine = rootview.findViewById(R.id.vTopBottomLine);
+        topBar = (FrameLayout) rootview.findViewById(R.id.topBar);
+        searchBar = (LinearLayout) rootview.findViewById(R.id.searchBar);
+        Log.e("001","MainPagerFragment onCreateView");
         return rootview;
     }
 
@@ -47,6 +80,9 @@ public class MainPagerFragment extends LazyFragment {
     public void finishCreateView(Bundle state) {
         isPrepared = true;
         isVisible = true;//通过 FragmentTransaction 的 hide 无法触发setUserVisibleHint，此处直接设置TRUE
+        if(mainPagerAdapter != null){
+            isPrepared = false;
+        }
         lazyLoad();
     }
 
@@ -61,19 +97,141 @@ public class MainPagerFragment extends LazyFragment {
         if(!isPrepared || !isVisible){
             return;
         }
-        initRecyclerView();
         mainPagerViewModel = ViewModelProviders.of(this).get(MainPagerViewModel.class);
         mainPagerViewModel.init();
         mainPagerViewModel.getMainPageInfoLiveData().observe(this, new Observer<MainPageInfo>() {
             @Override
             public void onChanged(@Nullable MainPageInfo mainPageInfo) {
-                mainPagerAdapter.notifyDataSetChanged();
+                if(mainPageInfo != null){
+
+                    mRecyclerView.loadMoreComplect();
+                    mRecyclerView.setLoadAll(mainPageInfo.isLoadAll);
+                    mRecyclerView.getAdapter().notifyDataSetChanged();
+                    mRecyclerView.refreshComplete();
+                    if(mainPageInfo.code > 0){
+                        //网络请求成功
+
+                    }else{
+                        //网络请求失败
+                        Toast.makeText(getActivity(),"" + mainPageInfo.msg,Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
         });
-        mainPagerAdapter = new MainPagerAdapter(getActivity(),mainPagerViewModel.getMainPageInfoLiveData().getValue());
+        mainPagerAdapter = new MainPagerAdapter(mRecyclerView,getActivity(),mainPagerViewModel.getMainPageInfoLiveData().getValue());
         mRecyclerView.setAdapter(mainPagerAdapter);
+        mRecyclerView.setRefreshListener(new RefreshListener() {
+            @Override
+            public void onRefresh() {
+                mainPagerViewModel.loadData();
+            }
+
+            @Override
+            public void onLoadingMore() {
+                mainPagerViewModel.loadDataMore();
+            }
+
+            @Override
+            public void onChange(int dx, int dy, int headerstate) {
+                totalDy += dy;
+                changeTopBarViewByDy(totalDy,headerstate);
+            }
+        });
         loadData();
         isPrepared = false;
+    }
+
+    private void changeTopBarViewByDy(long totalDy,int headerstate) {
+        float alpha = 1.0f * (totalDy)/250.0f;
+        if(alpha < 0.0f){
+            alpha = 0.0f;
+        }else if(alpha > 1.0f){
+            alpha = 1.0f;
+        }
+        if(alpha == 1.0f){
+            if(!isExpaned){
+                AppUtils.setStatusBarLightModel(getActivity(),true);
+                expandSearchBar();
+                isExpaned = true;
+            }
+        }else if(alpha == 0.0f){
+            if(isExpaned){
+                AppUtils.setStatusBarLightModel(getActivity(),false);
+                collapSearchBar();
+                isExpaned = false;
+            }
+        }
+        topViewBg01.setAlpha(alpha);
+        topViewBg02.setAlpha(alpha);
+        topViewBottomLine.setAlpha(alpha);
+
+        switch (headerstate){
+            case RefrshHeaderViewComm.STATE_STATE_HIDE:
+                topBar.setVisibility(View.VISIBLE);
+                break;
+            default:
+                topBar.setVisibility(View.GONE);
+                break;
+        }
+    }
+
+    /**
+     * 压缩SearchBar
+     */
+    private void collapSearchBar() {
+        int searchBarCrxWidth = searchBar.getWidth();
+        int fromWidth = searchBarCrxWidth;
+        int toWidth = orignalSearchBarWidth;
+
+        if(animator != null && animator.isRunning()){
+            animator.cancel();
+        }
+        animator = ValueAnimator
+                .ofInt(fromWidth,toWidth)
+                .setDuration(300);
+        animator.setInterpolator(new DecelerateInterpolator());
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int width = (int) animation.getAnimatedValue();
+                searchBar.getLayoutParams().width = width;
+                searchBar.requestLayout();
+                topBar.requestLayout();
+            }
+        });
+        animator.start();
+    }
+
+    /**
+     * 展开SearchBar
+     */
+    private void expandSearchBar() {
+        int topBarWidth = topBar.getWidth();
+        int leftMargin = ((RelativeLayout.LayoutParams)searchBar.getLayoutParams()).leftMargin;
+        int rightMargin = ((RelativeLayout.LayoutParams)searchBar.getLayoutParams()).rightMargin;
+        if(orignalSearchBarWidth == 0){
+            orignalSearchBarWidth = searchBar.getWidth();
+        }
+        int fromWidth = orignalSearchBarWidth;
+        int toWidth = topBarWidth - leftMargin - rightMargin;
+
+        if(animator != null && animator.isRunning()){
+            animator.cancel();
+        }
+        animator = ValueAnimator
+                .ofInt(fromWidth,toWidth)
+                .setDuration(300);
+        animator.setInterpolator(new AccelerateInterpolator());
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                int width = (int) animation.getAnimatedValue();
+                searchBar.getLayoutParams().width = width;
+                searchBar.requestLayout();
+                topBar.requestLayout();
+            }
+        });
+        animator.start();
     }
 
     @Override
@@ -86,37 +244,5 @@ public class MainPagerFragment extends LazyFragment {
     protected void onVisible() {
         super.onVisible();
         lazyLoad();
-    }
-
-    private void initRecyclerView() {
-
-        gridLayoutManager = new GridLayoutManager(getActivity(),2);
-        gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
-            @Override
-            public int getSpanSize(int position) {
-                int viewType = mainPagerAdapter.getItemViewType(position);
-                int spanSize = 1;
-                switch (viewType){
-                    case MainPagerAdapter.VIEWTYPE_VIEWPAGER:
-                        spanSize = 2;
-                        break;
-                    case MainPagerAdapter.VIEWTYPE_TITLE:
-                        spanSize = 2;
-                        break;
-                    case MainPagerAdapter.VIEWTYPE_SHAREWELL:
-                        spanSize = 1;
-                        break;
-                    case MainPagerAdapter.VIEWTYPE_ENTRANCE:
-                        spanSize = 2;
-                        break;
-                    case MainPagerAdapter.VIEWTYPE_LIST:
-                        spanSize = 2;
-                        break;
-                }
-                return spanSize;
-            }
-        });
-        mRecyclerView.setLayoutManager(gridLayoutManager);
-        TitleItemDecoration titleItemDecoration = new TitleItemDecoration(getContext(), mRecyclerView);
     }
 }

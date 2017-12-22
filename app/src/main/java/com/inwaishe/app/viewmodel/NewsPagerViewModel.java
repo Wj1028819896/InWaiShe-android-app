@@ -2,13 +2,13 @@ package com.inwaishe.app.viewmodel;
 
 import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.MutableLiveData;
 
+import com.inwaishe.app.dataprovider.DataProvider;
 import com.inwaishe.app.dbroom.NewsTypes;
 import com.inwaishe.app.entity.mainpage.MainPageInfo;
+import com.inwaishe.app.http.downloadfile.ThreadPollUtil;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -68,18 +68,22 @@ public class NewsPagerViewModel extends AndroidViewModel {
 
     public void loadData(final NewsTypes type){
         //爬虫抓数据
-        new Thread(new Runnable() {
+        Thread exe = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-
                     MainPageInfo mainPageInfo = newsListsPagerLiveData.getValue().get(type).getValue();
-                    mainPageInfo.pullDataJsoupByType(type);
+                    new DataProvider().upDataNewsPageInfo(type,mainPageInfo);
                     newsListsPagerLiveData.getValue().get(type).postValue(mainPageInfo);
                 } catch (Exception e) {
                     e.printStackTrace();
+                    MainPageInfo mainPageInfo = newsListsPagerLiveData.getValue().get(type).getValue();
+                    mainPageInfo.code = -1;
+                    mainPageInfo.msg = "未知错误：" + e.getMessage();
+                    newsListsPagerLiveData.getValue().get(type).postValue(mainPageInfo);
                 }
             }
-        }).start();
+        });
+        ThreadPollUtil.getInstance().exeCute(exe);
     }
 }

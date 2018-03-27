@@ -7,7 +7,7 @@ import android.arch.lifecycle.MutableLiveData;
 
 import com.inwaishe.app.dataprovider.DataProvider;
 import com.inwaishe.app.entity.mainpage.MainPageInfo;
-import com.inwaishe.app.http.downloadfile.ThreadPollUtil;
+import com.inwaishe.app.http.ThreadPollUtil;
 
 /**
  * Created by WangJing on 2017/8/9.
@@ -43,12 +43,14 @@ public class MainPagerViewModel extends AndroidViewModel {
             public void run() {
                 try {
                     MainPageInfo mainPageInfo = mainPageInfoLiveData.getValue();
+                    mainPageInfo.isRefreshBack = false;
                     new DataProvider().upDataMainPageInfo(mainPageInfo);
                     mainPageInfoLiveData.postValue(mainPageInfo);
                 } catch (Exception e) {
                     e.printStackTrace();
                     MainPageInfo mainPageInfo = mainPageInfoLiveData.getValue();
                     mainPageInfo.code = -1;
+                    mainPageInfo.isRefreshBack = false;
                     mainPageInfo.msg = "未知错误";
                     mainPageInfoLiveData.postValue(mainPageInfo);
                 }
@@ -69,6 +71,7 @@ public class MainPagerViewModel extends AndroidViewModel {
                 try {
                     MainPageInfo mainPageInfo = mainPageInfoLiveData.getValue();
                     mainPageInfo.pageNum = 1;
+                    mainPageInfo.isRefreshBack = true;
                     new DataProvider().upDataMainPageInfo(mainPageInfo);
                     mainPageInfoLiveData.postValue(mainPageInfo);
                 } catch (Exception e) {
@@ -76,6 +79,7 @@ public class MainPagerViewModel extends AndroidViewModel {
                     MainPageInfo mainPageInfo = mainPageInfoLiveData.getValue();
                     mainPageInfo.code = -1;
                     mainPageInfo.msg = "未知错误";
+                    mainPageInfo.isRefreshBack = true;
                     mainPageInfoLiveData.postValue(mainPageInfo);
                 }
             }

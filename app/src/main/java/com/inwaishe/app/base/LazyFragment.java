@@ -21,6 +21,7 @@ public abstract class LazyFragment extends LifecycleFragment{
     private View mRootView;
     protected boolean isVisible;//fragment 是否可见
     protected boolean isPrepared;//是否View初始化完成
+    protected boolean isFirstInitLiveData = false;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {

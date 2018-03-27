@@ -1,4 +1,4 @@
-package com.inwaishe.app.http.downloadfile;
+package com.inwaishe.app.dataprovider;
 
 
 import com.inwaishe.app.entity.video.BiliVideoInfo;
@@ -19,7 +19,7 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 
-public class DownLoad {
+public class BiliVedioDataProvider {
 
 	public static void main(String[] args) throws Exception {
 //		String avid = "1960277"; //https://www.bilibili.com/video/av12674268/  后面 av后面的数字就是avid

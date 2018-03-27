@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -28,6 +29,7 @@ public class VedioPagerFragment extends LazyFragment{
     private GridLayoutManager gridLayoutManager;
     VedioPagerViewModel vedioPagerViewModel;
     VedioListAdapter vedioListAdapter;
+    SwipeRefreshLayout swipeRefreshLayout;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -39,7 +41,7 @@ public class VedioPagerFragment extends LazyFragment{
 
     private void initView(View rootView) {
         recyclerView = (RecyclerView) rootView.findViewById(R.id.rvVedioList);
-
+        swipeRefreshLayout = (SwipeRefreshLayout) rootView.findViewById(R.id.srL);
     }
 
 
@@ -60,6 +62,7 @@ public class VedioPagerFragment extends LazyFragment{
             public void onChanged(@Nullable MainPageInfo mainPageInfo) {
                 if(vedioListAdapter != null){
                     vedioListAdapter.setLoadingMore(false);
+                    swipeRefreshLayout.setRefreshing(false);
                     vedioListAdapter.setLoadAll(mainPageInfo.isLoadAll);
                     vedioListAdapter.notifyDataSetChanged();
                 }
@@ -79,7 +82,24 @@ public class VedioPagerFragment extends LazyFragment{
             }
         });
         recyclerView.setAdapter(vedioListAdapter);
+        swipeRefreshLayout.setColorSchemeResources(
+                R.color.colorAccent,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+        swipeRefreshLayout.setOnRefreshListener(refreshListener);
         lazyLoad();
+    }
+
+    private SwipeRefreshLayout.OnRefreshListener refreshListener = new SwipeRefreshLayout.OnRefreshListener() {
+        @Override
+        public void onRefresh() {
+            loadDataForRefresh();
+        }
+    };
+
+    private void loadDataForRefresh() {
+        vedioPagerViewModel.loadData(true);
     }
 
     @Override
@@ -95,7 +115,7 @@ public class VedioPagerFragment extends LazyFragment{
     @Override
     protected void loadData() {
         super.loadData();
-        vedioPagerViewModel.loadData();
+        vedioPagerViewModel.loadData(false);
     }
 
     @Override

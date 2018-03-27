@@ -3,26 +3,30 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <View
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="2dp"
-        android:background="@color/red">
-    </View>
-    <android.support.v7.widget.AppCompatImageView
-        android:layout_marginTop="5dp"
-        android:id="@+id/inwaishe"
-        android:layout_width="match_parent"
-        android:layout_height="35dp"
-        app:srcCompat="@drawable/animator_inwaishe"
-        />
-    <TextView
-        android:id="@+id/tvState"
-        android:layout_marginTop="5dp"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/inwaishe"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@color/itemTextDate"
-        android:textSize="@dimen/default_small_text_size"
-        android:text="下拉刷新"/>
+        android:orientation="vertical"
+        android:layout_alignParentBottom="true">
+        <android.support.v7.widget.AppCompatImageView
+            android:layout_marginTop="5dp"
+            android:id="@+id/inwaishe"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            app:srcCompat="@drawable/animator_inwaishe"
+            />
+        <TextView
+            android:id="@+id/tvState"
+            android:layout_marginTop="5dp"
+            android:layout_marginBottom="4dp"
+            android:layout_centerHorizontal="true"
+            android:layout_gravity="center"
+            android:layout_below="@id/inwaishe"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/itemTextDate"
+            android:textSize="@dimen/default_small_text_size"
+            android:text="下拉刷新"/>
+    </LinearLayout>
 </RelativeLayout>

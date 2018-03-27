@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:background="@color/itembg">
+    <include
+        android:layout_marginTop="0dp"
+        android:id="@+id/title"
+        layout="@layout/item_welfaretitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <android.support.v7.widget.RecyclerView
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/title"
+        android:id="@+id/ryv_welfareContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </android.support.v7.widget.RecyclerView>
+</RelativeLayout>

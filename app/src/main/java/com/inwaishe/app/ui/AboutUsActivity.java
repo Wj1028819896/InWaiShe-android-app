@@ -1,5 +1,11 @@
 package com.inwaishe.app.ui;
 
+import android.arch.lifecycle.Lifecycle;
+import android.arch.lifecycle.LifecycleOwner;
+import android.arch.lifecycle.LifecycleRegistry;
+import android.arch.lifecycle.LifecycleRegistryOwner;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,9 +14,12 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.inwaishe.app.R;
+import com.inwaishe.app.entity.mainpage.MainPageInfo;
 import com.inwaishe.app.framework.webviewstyleselector.widget.NumSeekBar;
+import com.inwaishe.app.viewmodel.MainPagerViewModel;
 
-public class AboutUsActivity extends AppCompatActivity {
+public class AboutUsActivity extends AppCompatActivity implements LifecycleRegistryOwner {
+    private MainPagerViewModel mainPagerViewModel;
 
 
     @Override
@@ -28,8 +37,27 @@ public class AboutUsActivity extends AppCompatActivity {
                 .setSelecterListener(new NumSeekBar.selecterListener() {
                     @Override
                     public void onSelected(int position, String scaleWord) {
+                        mainPagerViewModel.loadData();
                         Toast.makeText(AboutUsActivity.this,"selected " + position + " : " + scaleWord,Toast.LENGTH_LONG).show();
                     }
                 }).Build();
+
+
+        mainPagerViewModel = ViewModelProviders.of(this).get(MainPagerViewModel.class);
+        mainPagerViewModel.init();
+        mainPagerViewModel.getMainPageInfoLiveData().observe(this,
+                new Observer<MainPageInfo>(){
+                    @Override
+                    public void onChanged(@Nullable MainPageInfo mainPageInfo) {
+                        Toast.makeText(AboutUsActivity.this,"onChanged",Toast.LENGTH_LONG).show();
+                    }
+                });
+
+    }
+    LifecycleRegistry mLifecycleRegistry = new LifecycleRegistry(this);
+
+    @Override
+    public LifecycleRegistry getLifecycle() {
+        return mLifecycleRegistry;
     }
 }

@@ -7,7 +7,7 @@ import android.arch.lifecycle.MutableLiveData;
 import com.inwaishe.app.dataprovider.DataProvider;
 import com.inwaishe.app.dbroom.NewsTypes;
 import com.inwaishe.app.entity.mainpage.MainPageInfo;
-import com.inwaishe.app.http.downloadfile.ThreadPollUtil;
+import com.inwaishe.app.http.ThreadPollUtil;
 
 import java.util.HashMap;
 
@@ -66,13 +66,16 @@ public class NewsPagerViewModel extends AndroidViewModel {
         init = true;
     }
 
-    public void loadData(final NewsTypes type){
+    public void loadData(final NewsTypes type, final boolean isRefresh){
         //爬虫抓数据
         Thread exe = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     MainPageInfo mainPageInfo = newsListsPagerLiveData.getValue().get(type).getValue();
+                    if(isRefresh){
+                        mainPageInfo.pageNum = 1;
+                    }
                     new DataProvider().upDataNewsPageInfo(type,mainPageInfo);
                     newsListsPagerLiveData.getValue().get(type).postValue(mainPageInfo);
                 } catch (Exception e) {

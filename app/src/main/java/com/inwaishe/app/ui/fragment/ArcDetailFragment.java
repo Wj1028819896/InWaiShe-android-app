@@ -11,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.annotation.RequiresApi;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import com.inwaishe.app.common.CommonData;
 import com.inwaishe.app.entity.mainpage.UserInfo;
 import com.inwaishe.app.framework.arch.bus.XBus;
 import com.inwaishe.app.framework.arch.bus.XBusObserver;
+import com.inwaishe.app.ui.ArcDetaileActivity;
 import com.inwaishe.app.viewmodel.ArcDetailViewModel;
 import com.inwaishe.app.widget.NestedScrollWebView;
 
@@ -79,6 +81,14 @@ public class ArcDetailFragment extends LazyFragment {
             mWvDetail.setTransitionGroup(true);
         }
         mWvDetail.setBackgroundColor(0);
+        XBus.getInstance().observe(this, ArcDetaileActivity.EVENT_FONTSIZE_CHANGE, new XBusObserver<Integer>() {
+            @Override
+            public void onCall(Integer fontSize) {
+                float size = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_SP
+                        ,fontSize,getResources().getDisplayMetrics());
+                mWvDetail.getSettings().setDefaultFontSize((int) size);
+            }
+        });
         return rootView;
     }
 

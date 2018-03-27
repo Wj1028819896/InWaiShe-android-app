@@ -12,7 +12,8 @@
     <dimen name="default_big_large_text_size">22sp</dimen>
 
     <dimen name="cardViewElevation">4dp</dimen>
-    <dimen name="cardViewMargin">4dp</dimen>
+    <dimen name="cardViewMargin">6dp</dimen>
     <dimen name="statusBarHeight">20dp</dimen>
+    <dimen name="cardCornerRadius">6dp</dimen>
 
 </resources>

@@ -1,67 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.CardView
+<RelativeLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_marginTop="1dp"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:foreground="?attr/selectableItemBackground"
+        android:layout_height="170dp"
+        android:background="?attr/selectableItemBackground"
         android:clickable="true"
-        android:layout_margin="@dimen/cardViewMargin"
-        app:cardBackgroundColor="@color/itembg"
-        app:cardCornerRadius="2dp"
-        app:cardElevation="@dimen/cardViewElevation"
         >
-
-        <LinearLayout
+        <ImageView
+            android:id="@+id/arcImg"
             android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@color/gray_80"
+            android:scaleType="centerCrop"/>
+        <TextView
+            android:id="@+id/arcTitle"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-            <TextView
-                android:layout_margin="5dp"
-                android:id="@+id/arcTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/titledemo"
-                android:textColor="@color/itemTextTitle"
-                android:singleLine="true"
-                android:textSize="@dimen/default_small_text_size"/>
+            android:layout_marginLeft="50dp"
+            android:layout_marginRight="50dp"
+            android:text="@string/titledemo"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:layout_centerInParent="true"
+            android:maxLines="2"
+            android:textSize="@dimen/default_big_text_size"/>
 
-            <ImageView
-                android:id="@+id/arcImg"
-                android:layout_width="match_parent"
-                android:layout_height="150dp"
-                android:src="@mipmap/longimgdemo"
-                android:scaleType="centerCrop"/>
-
-
-            <LinearLayout
-                android:paddingTop="0dp"
+            <RelativeLayout
                 android:padding="5dp"
+                android:layout_alignParentBottom="true"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:background="#58000000"
                 android:orientation="horizontal">
-
                 <TextView
-                    android:layout_weight="1"
+                    android:layout_alignParentLeft="true"
                     android:id="@+id/arcAuthor"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/publisherdemo"
                     android:textSize="@dimen/default_tinyx_text_size"
                     android:singleLine="true"
-                    android:textColor="@color/holo_blue_dark"/>
+                    android:padding="5dp"
+                    android:textColor="@color/white"/>
 
                 <android.support.v7.widget.AppCompatTextView
+                    android:layout_centerInParent="true"
                     android:gravity="left|center"
                     android:drawablePadding="10dp"
-                    android:layout_weight="1"
                     android:id="@+id/arcPlaytimes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="11"
+                    android:padding="5dp"
                     android:textSize="@dimen/default_tinyx_text_size"
-                    android:layout_alignParentRight="true"
-                    android:textColor="@color/itemTextDate"/>
+                    android:textColor="@color/white"
+                    />
 
                 <android.support.v7.widget.AppCompatTextView
                     android:layout_weight="1"
@@ -71,10 +66,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="12"
+                    android:padding="5dp"
                     android:textSize="@dimen/default_tinyx_text_size"
                     android:layout_alignParentRight="true"
-                    android:textColor="@color/itemTextDate"/>
+                    android:textColor="@color/white"/>
 
-            </LinearLayout>
-        </LinearLayout>
-    </android.support.v7.widget.CardView>
+            </RelativeLayout>
+    </RelativeLayout>

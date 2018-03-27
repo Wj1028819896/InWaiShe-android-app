@@ -6,7 +6,7 @@
     android:layout_height="170dp"
     app:arc_cropDirection="cropInside"
     app:arc_height="20dp"
-    android:elevation="5dp">
+    android:background="@color/itembg">
     <com.youth.banner.Banner
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:id="@+id/banner"

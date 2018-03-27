@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.inwaishe.app.ui.SplashActivity"
+    >
+
+    <ImageView
+        android:id="@+id/ivAd"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/login_top_bg"/>
+
+    <RelativeLayout
+        android:padding="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:background="@color/itembg">
+
+        <ImageView
+            android:id="@+id/logo"
+            android:elevation="20dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@color/itemTextDate"
+            android:src="@mipmap/logo"
+            />
+        <LinearLayout
+            android:id="@+id/ll"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="5dp"
+            android:layout_toRightOf="@id/logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/tv1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="IN头条"
+                android:textStyle="bold|italic"
+                android:textColor="@color/itemTextDate"
+                android:textSize="@dimen/default_big_large_text_size"
+                />
+            <TextView
+                android:layout_toRightOf="@id/logo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/itemTextDate"
+                android:textStyle="bold"
+                android:textSize="@dimen/default_tiny_text_size"
+                android:text="inwaishe.com" />
+        </LinearLayout>
+        <TextView
+            android:layout_marginLeft="15dp"
+            android:layout_centerVertical="true"
+            android:layout_toRightOf="@id/ll"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/itemTextDate"
+            android:textStyle="bold"
+            android:textSize="@dimen/default_medium_text_size"
+            android:text="分享外设精彩"/>
+    </RelativeLayout>
+
+
+</RelativeLayout>

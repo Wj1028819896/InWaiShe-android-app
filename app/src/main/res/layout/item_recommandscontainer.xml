@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/itembg">
+    <include
+        android:id="@+id/title"
+        layout="@layout/item_title_inner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <android.support.v7.widget.CardView
+        android:layout_marginTop="5dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="@dimen/cardViewMargin"
+        android:layout_marginRight="@dimen/cardViewMargin"
+        android:id="@+id/cvmain"
+        android:layout_below="@id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="0dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@android:color/white"
+        >
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp">
+            <ImageView
+                android:id="@+id/ivmain"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@color/gray" />
+            <TextView
+                android:id="@+id/tvmain"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:background="@color/transparent100"
+                android:padding="10dp"
+                android:maxLines="2"
+                android:text="xx"
+                android:textColor="@color/white"
+                android:textSize="@dimen/default_big_text_size" />
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+    <android.support.v7.widget.RecyclerView
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/cvmain"
+        android:id="@+id/ryv_reCommandContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </android.support.v7.widget.RecyclerView>
+</RelativeLayout>

@@ -168,4 +168,26 @@ public class NestedScrollWebView extends WebView implements NestedScrollingChild
         return mChildHelper.dispatchNestedPreFling(velocityX, velocityY);
     }
 
+    private OnScrollChangedCallback mOnScrollChangedCallback;
+    public OnScrollChangedCallback getOnScrollChangedCallback() {
+        return mOnScrollChangedCallback;
+    }
+
+    public void setOnScrollChangedCallback(
+            final OnScrollChangedCallback onScrollChangedCallback) {
+        mOnScrollChangedCallback = onScrollChangedCallback;
+    }
+    @Override
+    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+        super.onScrollChanged(l, t, oldl, oldt);
+        if (mOnScrollChangedCallback != null) {
+            mOnScrollChangedCallback.onScroll(l - oldl, t - oldt);
+        }
+    }
+    /**
+     * Impliment in the activity/fragment/view that you want to listen to the webview
+     */
+    public static interface OnScrollChangedCallback {
+        public void onScroll(int dx, int dy);
+    }
 }

@@ -1,15 +1,12 @@
 package com.inwaishe.app.media;
 
-import android.app.Activity;
 import android.arch.lifecycle.LifecycleRegistry;
 import android.arch.lifecycle.LifecycleRegistryOwner;
 import android.content.Context;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Build;
-import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -25,14 +22,11 @@ import com.dou361.ijkplayer.widget.PlayStateParams;
 import com.dou361.ijkplayer.widget.PlayerView;
 import com.inwaishe.app.R;
 import com.inwaishe.app.common.MediaUtils;
+import com.inwaishe.app.dataprovider.BiliVedioDataProvider;
 import com.inwaishe.app.entity.video.BiliVideoInfo;
 import com.inwaishe.app.framework.arch.bus.XBus;
 import com.inwaishe.app.framework.arch.bus.XBusObserver;
 import com.inwaishe.app.framework.arch.bus.XBusThreadModel;
-import com.inwaishe.app.http.downloadfile.DownLoad;
-
-import java.io.File;
-import java.io.IOException;
 
 /***
  * 媒体播放界面
@@ -163,7 +157,7 @@ public class MediaPlayerActivity extends AppCompatActivity implements LifecycleR
             @Override
             public void run() {
                 try {
-                    BiliVideoInfo biliVideoInfo = DownLoad.getFirstVideo(avid);
+                    BiliVideoInfo biliVideoInfo = BiliVedioDataProvider.getFirstVideo(avid);
                     XBus.getInstance().post(mXTaskTag,biliVideoInfo);
                 } catch (Exception e) {
                     e.printStackTrace();

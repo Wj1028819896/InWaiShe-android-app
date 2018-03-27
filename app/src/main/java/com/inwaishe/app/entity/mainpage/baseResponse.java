@@ -10,6 +10,7 @@ public class baseResponse implements Serializable{
 
 
     public int code = 0;//状态码（success ? code>0 : code<0）
+    public boolean isRefreshBack = true;
     public String msg = "";//消息
     public String html = "";
 

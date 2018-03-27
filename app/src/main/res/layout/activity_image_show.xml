@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.inwaishe.app.ui.display.ImageShowActivity"
+    android:background="@color/black_80">
+    <com.inwaishe.app.widget.HackyViewPager
+        android:id="@+id/vpPicList"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </com.inwaishe.app.widget.HackyViewPager>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/statusBarHeight"
+        android:background="@color/transparent100"
+        />
+    <LinearLayout
+        android:layout_marginTop="@dimen/statusBarHeight"
+        android:layout_below="@id/statusBar"
+        android:id="@+id/topTitleBar"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
+        android:background="@color/transparent100"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/ivBack"
+            android:layout_width="?actionBarSize"
+            android:layout_height="match_parent"
+            android:padding="15dp"
+            app:srcCompat="@drawable/ic_close_white"/>
+
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:id="@+id/tvTitle"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="WangJing"
+            android:textStyle="bold|italic"
+            android:maxLines="1"
+            android:textColor="@color/white"
+            android:textSize="@dimen/default_medium_text_size"
+            android:layout_height="wrap_content" />
+        <View
+            android:layout_width="?actionBarSize"
+            android:layout_height="match_parent"/>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="10dp">
+
+        <TextView
+            android:id="@+id/tvCursor"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:text="1/4"
+            android:textStyle="bold|italic"
+            android:maxLines="1"
+            android:textColor="@color/white"
+            android:textSize="@dimen/default_medium_text_size"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/tvArtTitle"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:text="@string/appbar_scrolling_view_behavior"
+            android:textStyle="bold|italic"
+            android:textColor="@color/white"
+            android:textSize="@dimen/default_medium_text_size"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="right">
+            <ImageView
+                android:id="@+id/ivShare"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
+                android:padding="15dp"
+                app:srcCompat="@drawable/ic_share_white"/>
+            <ImageView
+                android:id="@+id/ivDownload"
+                android:layout_width="?actionBarSize"
+                android:layout_height="?actionBarSize"
+                android:padding="15dp"
+                app:srcCompat="@drawable/ic_download_white"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

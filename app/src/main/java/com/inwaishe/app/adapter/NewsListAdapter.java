@@ -130,7 +130,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
                     listViewHolder.tvArcDate.setText(info.artDate);
                     listViewHolder.tvArcDesc.setText(info.artDesc);
                     listViewHolder.tvArcAuthor.setText(info.artAuthor);
-
+                    GlideUtils.disPlayUrl(mContext,info.artAuthorAvter,listViewHolder.ivAvter);
                     GlideUtils.disPlayUrl(mContext,info.artImageUrl,listViewHolder.ivArc);
                     listViewHolder.itemView.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -170,7 +170,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
     private class ListViewHolder extends RecyclerView.ViewHolder{
 
         private TextView tvArcTitle,tvArcDesc,tvArcAuthor,tvArcDate;
-        private ImageView ivArc;
+        private ImageView ivArc,ivAvter;
         public ListViewHolder(View itemView) {
             super(itemView);
 
@@ -179,6 +179,7 @@ public class NewsListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             tvArcDesc = (TextView) itemView.findViewById(R.id.arcDesc);
             tvArcDate = (TextView) itemView.findViewById(R.id.arcDate);
             ivArc = (ImageView) itemView.findViewById(R.id.arcImg);
+            ivAvter = (ImageView) itemView.findViewById(R.id.arcAuthorAvter);
 
         }
     }

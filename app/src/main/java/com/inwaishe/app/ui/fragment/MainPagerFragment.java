@@ -33,6 +33,7 @@ import com.inwaishe.app.entity.mainpage.UserInfo;
 import com.inwaishe.app.framework.arch.bus.XBus;
 import com.inwaishe.app.framework.arch.bus.XBusObserver;
 import com.inwaishe.app.viewmodel.MainPagerViewModel;
+import com.inwaishe.app.widget.LoadingNetErrorView;
 import com.inwaishe.app.widget.TitleItemDecoration;
 import com.inwaishe.app.widget.refreshView.RefreshListener;
 import com.inwaishe.app.widget.refreshView.RefreshRecyclerView;
@@ -53,7 +54,9 @@ public class MainPagerFragment extends LazyFragment {
     private View topViewBg01,topViewBg02,topViewBottomLine;
     private FrameLayout topBar;
     private LinearLayout searchBar;
-    private long totalDy = 0;
+    private LoadingNetErrorView mLoadingNetErrorView;
+    private float bannerTop = 0;//banner top距离
+    private float bannerHeight = 0;
     private int orignalSearchBarWidth = 0;
     ValueAnimator animator;
     private boolean isExpaned = false;
@@ -67,6 +70,7 @@ public class MainPagerFragment extends LazyFragment {
         topViewBottomLine = rootview.findViewById(R.id.vTopBottomLine);
         topBar = (FrameLayout) rootview.findViewById(R.id.topBar);
         searchBar = (LinearLayout) rootview.findViewById(R.id.searchBar);
+        mLoadingNetErrorView = (LoadingNetErrorView) rootview.findViewById(R.id.loadingneterrorview);
         Log.e("001","MainPagerFragment onCreateView");
         return rootview;
     }
@@ -78,6 +82,7 @@ public class MainPagerFragment extends LazyFragment {
 
     @Override
     public void finishCreateView(Bundle state) {
+        isFirstInitLiveData = true;
         isPrepared = true;
         isVisible = true;//通过 FragmentTransaction 的 hide 无法触发setUserVisibleHint，此处直接设置TRUE
         if(mainPagerAdapter != null){
@@ -102,20 +107,41 @@ public class MainPagerFragment extends LazyFragment {
         mainPagerViewModel.getMainPageInfoLiveData().observe(this, new Observer<MainPageInfo>() {
             @Override
             public void onChanged(@Nullable MainPageInfo mainPageInfo) {
-                if(mainPageInfo != null){
-
-                    mRecyclerView.loadMoreComplect();
-                    mRecyclerView.setLoadAll(mainPageInfo.isLoadAll);
-                    mRecyclerView.getAdapter().notifyDataSetChanged();
-                    mRecyclerView.refreshComplete();
+                if(mainPageInfo != null && !isFirstInitLiveData){
                     if(mainPageInfo.code > 0){
                         //网络请求成功
+                        if(mainPageInfo.isRefreshBack){
+                            mLoadingNetErrorView.setVisibility(View.GONE);
+                            mRecyclerView.setVisibility(View.VISIBLE);
+                        }
+                        mRecyclerView.loadMoreComplect();
+                        mRecyclerView.setLoadAll(mainPageInfo.isLoadAll);
+                        mRecyclerView.setLoadMoreNetError(false);
+                        mRecyclerView.getAdapter().notifyDataSetChanged();
+                        mRecyclerView.refreshComplete();
 
                     }else{
+                        if(mainPageInfo.isRefreshBack){
+                            mRecyclerView.setLoadMoreNetError(false);
+                            if(!mRecyclerView.isShown()){
+                                mLoadingNetErrorView.setNetErrorViewShown();
+                            }else{
+                                mLoadingNetErrorView.setVisibility(View.GONE);
+                                mRecyclerView.setVisibility(View.VISIBLE);
+                            }
+                        }else{
+                            //footview 改变
+                            mRecyclerView.setLoadMoreNetError(true);
+                        }
                         //网络请求失败
                         Toast.makeText(getActivity(),"" + mainPageInfo.msg,Toast.LENGTH_SHORT).show();
+                        mRecyclerView.loadMoreComplect();
+                        mRecyclerView.setLoadAll(mainPageInfo.isLoadAll);
+                        mRecyclerView.getAdapter().notifyDataSetChanged();
+                        mRecyclerView.refreshComplete();
                     }
                 }
+                isFirstInitLiveData = false;
             }
         });
         mainPagerAdapter = new MainPagerAdapter(mRecyclerView,getActivity(),mainPagerViewModel.getMainPageInfoLiveData().getValue());
@@ -133,16 +159,27 @@ public class MainPagerFragment extends LazyFragment {
 
             @Override
             public void onChange(int dx, int dy, int headerstate) {
-                totalDy += dy;
-                changeTopBarViewByDy(totalDy,headerstate);
+                changeTopBarViewByDy(headerstate);
             }
         });
         loadData();
         isPrepared = false;
     }
 
-    private void changeTopBarViewByDy(long totalDy,int headerstate) {
-        float alpha = 1.0f * (totalDy)/250.0f;
+    private void changeTopBarViewByDy(int headerstate) {
+        if(mRecyclerView.getFirstVisiblePosition() == 1){
+            //banner 可见
+            bannerHeight = mRecyclerView.getChildAt(0).getHeight()==0.0f?1.0f:mRecyclerView.getChildAt(0).getHeight();
+            bannerTop = mRecyclerView.getChildAt(0).getTop();
+        }else if(mRecyclerView.getFirstVisiblePosition() == 0){
+            bannerHeight = 1;
+            bannerTop = 0;
+        }else {
+            bannerHeight = 1;
+            bannerTop = -1;
+        }
+        Log.e(TAG,"top:" + bannerTop + "  H:" + bannerHeight);
+        float alpha = 1.0f * (-bannerTop)/bannerHeight;
         if(alpha < 0.0f){
             alpha = 0.0f;
         }else if(alpha > 1.0f){
@@ -181,6 +218,9 @@ public class MainPagerFragment extends LazyFragment {
     private void collapSearchBar() {
         int searchBarCrxWidth = searchBar.getWidth();
         int fromWidth = searchBarCrxWidth;
+        if(orignalSearchBarWidth == 0){
+            orignalSearchBarWidth = (int) (topBar.getWidth()/3.5);
+        }
         int toWidth = orignalSearchBarWidth;
 
         if(animator != null && animator.isRunning()){
@@ -237,6 +277,10 @@ public class MainPagerFragment extends LazyFragment {
     @Override
     protected void loadData() {
         super.loadData();
+        mLoadingNetErrorView.setVisibility(View.VISIBLE);
+        mLoadingNetErrorView.setLoadingViewShown();
+        mRecyclerView.setVisibility(View.GONE);
+        mRecyclerView.refreshingStart();
         mainPagerViewModel.loadData();
     }
 

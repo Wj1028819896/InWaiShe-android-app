@@ -1,7 +1,9 @@
-package com.inwaishe.app.http.downloadfile;
+package com.inwaishe.app.framework.download;
 
+import android.content.Context;
 import android.os.Environment;
-import android.util.Log;
+import android.os.Handler;
+import android.os.Looper;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -15,41 +17,35 @@ import okhttp3.Request;
 import okhttp3.Response;
 
 /**
- * Created by Administrator on 2017/8/13 0013.
+ * Created by WangJing on 2018/3/2.
  */
 
-public class DownloadUtil {
+public class DownLoadFileService implements Runnable{
 
-    private static DownloadUtil downloadUtil;
-    private final OkHttpClient okHttpClient;
+    private String url;
+    private Context context;
+    private DownLoadCallBack callBack;
+    private Handler mainThreadHandler;
+    private String saveDir;
 
-    public static DownloadUtil get() {
-        if (downloadUtil == null) {
-            downloadUtil = new DownloadUtil();
-        }
-        return downloadUtil;
+    public DownLoadFileService(String saveDir, String url, DownLoadCallBack callBack) {
+        this.url = url;
+        this.callBack = callBack;
+        //this.context = context;
+        this.mainThreadHandler = new Handler(Looper.getMainLooper());
+        this.saveDir = saveDir;
     }
 
-    private DownloadUtil() {
-        okHttpClient = new OkHttpClient();
-    }
-
-    /**
-     * @param url 下载连接
-     * @param saveDir 储存下载文件的SDCard目录
-     * @param listener 下载监听
-     */
-    public void download(final String url, final String saveDir, final String fileName, final OnDownloadListener listener) {
-        Log.e("ff","" + "download");
+    @Override
+    public void run() {
         Request request = new Request.Builder().url(url).build();
-        Log.e("ff","" + "download01");
-        okHttpClient.newCall(request).enqueue(new Callback() {
+
+        new OkHttpClient().newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                // 下载失败
-                Log.e("ff","" + "downloadfail" + e.getMessage());
-                listener.onDownloadFailed(e);
+
             }
+
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 InputStream is = null;
@@ -61,7 +57,7 @@ public class DownloadUtil {
                 try {
                     is = response.body().byteStream();
                     long total = response.body().contentLength();
-                    File file = new File(savePath, fileName);
+                    final File file = new File(savePath, getNameFromUrl(url));
                     if(file.exists()){
                         file.delete();
                     }
@@ -71,15 +67,25 @@ public class DownloadUtil {
                     while ((len = is.read(buf)) != -1) {
                         fos.write(buf, 0, len);
                         sum += len;
-                        int progress = (int) (sum * 1.0f / total * 100);
+                        final int progress = (int) (sum * 1.0f / total * 100);
                         // 下载中
-                        listener.onDownloading(progress);
+                        mainThreadHandler.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                callBack.onDownLoading(progress,100L);
+                            }
+                        });
                     }
                     fos.flush();
                     // 下载完成
-                    listener.onDownloadSuccess();
+                    mainThreadHandler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            callBack.onDownLoadSuccess(file);
+                        }
+                    });
                 } catch (Exception e) {
-                    listener.onDownloadFailed(e);
+                    callBack.onDownLoadFailed(e.getMessage());
                 } finally {
                     try {
                         if (is != null)
@@ -104,7 +110,7 @@ public class DownloadUtil {
      */
     private String isExistDir(String saveDir) throws IOException {
         // 下载位置
-        File downloadFile = new File(Environment.getExternalStorageDirectory(), saveDir);
+        File downloadFile = new File(saveDir);
         if (!downloadFile.mkdirs()) {
             downloadFile.createNewFile();
         }
@@ -121,22 +127,4 @@ public class DownloadUtil {
         return url.substring(url.lastIndexOf("/") + 1);
     }
 
-    public interface OnDownloadListener {
-        /**
-         * 下载成功
-         */
-        void onDownloadSuccess();
-
-        /**
-         * @param progress
-         * 下载进度
-         */
-        void onDownloading(int progress);
-
-        /**
-         * 下载失败
-         */
-        void onDownloadFailed(Exception e);
-    }
 }
-

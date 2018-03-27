@@ -18,6 +18,8 @@ import com.inwaishe.app.entity.mainpage.BannerInfo;
 import com.inwaishe.app.entity.mainpage.MainPageInfo;
 import com.inwaishe.app.entity.mainpage.ShareInfo;
 import com.inwaishe.app.entity.mainpage.UserInfo;
+import com.inwaishe.app.entity.photocenter.AlbumInfo;
+import com.inwaishe.app.entity.photocenter.PhotoCenterBackInfo;
 import com.inwaishe.app.http.OkCookieJar;
 import com.inwaishe.app.http.OkHttpUtils;
 import com.inwaishe.app.http.PreferencesCookieStore;
@@ -188,6 +190,187 @@ public class DataProvider {
         return cookieStr.toString();
     }
 
+
+    public void getPhotoCenterInfo(PhotoCenterBackInfo photoCenterBackInfo) throws Exception {
+        checkMainThread();
+        Document doc = Jsoup.connect("http://www.inwaishe.com/forum.php?" +
+                "mod=forumdisplay" +
+                "&fid=53" +
+                "&page=" + photoCenterBackInfo.pageNum +
+                "&filter=lastpost" +
+                "&orderby=lastpost")
+                .header("Cookie",getLoginCookies(MyApplication.con))
+                .get();
+
+        Element ul = doc.select("ul[id=waterfall]").first();
+        Elements lis = ul.select("li");
+        if(photoCenterBackInfo.pageNum == 1){
+            photoCenterBackInfo.abList.clear();
+        }
+        if(lis.size() < 20){
+            photoCenterBackInfo.isLoadAll = true;
+            return;
+        }
+        for(int p = 0; p < lis.size(); p++){
+            AlbumInfo albumInfo = new AlbumInfo();
+            Element li = lis.get(p);
+            Element div01 = li.select("div[class=c cl]").first();
+            Element a = div01.select("a").first();
+            Element div02 = li.select("div[class=auth cl]").first();
+
+            albumInfo.title = li.select("h3[class=xw0]").first().select("a").first().text();
+            albumInfo.artSrc = a.attr("href");
+            albumInfo.coverImgSrc = "http://www.inwaishe.com/" + a.select("img").first().attr("src");
+            albumInfo.commentsNum = Integer.valueOf(div02.select("a").first().text());
+            albumInfo.author = div02.select("a").get(1).text();
+            photoCenterBackInfo.abList.add(albumInfo);
+        }
+        photoCenterBackInfo.pageNum++;
+    }
+
+    /**
+     * 获取文章内容html
+     * @param artSrc 地址
+     * @return
+     */
+    public String getWellShareArtDetailHtmlString(String artSrc,Articlelnfo articlelnfo) throws Exception{
+
+        checkMainThread();
+        Document doc = Jsoup.connect(artSrc)
+                .header("Cookie",getLoginCookies(MyApplication.con))
+                .get();
+
+        Element fastpostform = doc.select("form[id=fastpostform]").first();
+        String action = fastpostform.attr("action");
+        String posttime = "" + System.currentTimeMillis();
+        if(fastpostform.select("input[name=posttime]").size() > 0){
+            posttime = fastpostform.select("input[name=posttime]").first().attr("value");
+        }
+        String formhash = fastpostform.select("input[name=formhash]").first().attr("value");
+        String usesig = fastpostform.select("input[name=usesig]").first().attr("value");
+        String subject = fastpostform.select("input[name=subject]").first().attr("value");
+
+        articlelnfo.replyFrom.action = "http://www.inwaishe.com/" + action;
+        articlelnfo.replyFrom.posttime = posttime;
+        articlelnfo.replyFrom.formhash = formhash;
+        articlelnfo.replyFrom.usesig = usesig;
+        articlelnfo.replyFrom.subject = subject;
+
+        Element ta = doc.select("div[id=postlist]").first().select("table").first();
+        Element td = ta.select("td").first();
+        articlelnfo.usrCommNum = Integer.valueOf(td.select("span").get(4).text());
+        articlelnfo.artReadTimes = Integer.valueOf(td.select("span").get(1).text());
+
+        /*****************************/
+        Element tb_detail = doc.select("table[class=plhin]").first();
+        Element tb_tr = tb_detail.select("tr").first();
+        Element tb_tr_td = tb_tr.select("td[class=plc]").first().select("div[class=pct]").first().select("table").first();
+
+        String table = tb_tr_td.html();
+
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MyApplication.con);
+        boolean isNight = sharedPreferences.getBoolean("THEME_NIGHT",false);
+
+        String bodyColor = "#222222";
+        String fontColor = "#666";
+        if(isNight){
+            bodyColor = "#222222";
+            fontColor = "#666";
+        }else{
+            bodyColor = "#FFFFFF";
+            fontColor = "#222222";
+        }
+
+        String Html = "<!DOCTYPE html>\n" +
+                "<head>\n</head>"
+                +"<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />"
+                +"<style type=\"text/css\">\n" +
+                "\t\tbody {background-color:" + bodyColor + ";padding:0px;margin-top: 250px;margin-bottom: 150px;}\n" +
+                "\t\tfont {color:"+ fontColor +"}\n" +
+                "\t</style>"
+                + "<body onload=\"loadimgwh();\">"
+                + "<h1 id=\"title\" style=\"display: none;position: fixed;top: 0px;background: burlywood;width: 100%;\"> 一直在顶部 </h1>"
+                + table
+                + "</body>"
+                + "<script type=\"text/javascript\" charset=\"UTF-8\">\n" +
+                "\tvar totalimgnum = document.getElementsByTagName(\"img\").length;\n" +
+                "\tvar windowWidth = document.documentElement.clientWidth;\n" +
+                "\tvar windowHeight = document.documentElement.clientHeight;\n" +
+                "\tvar loadwhfinshnum = 0;\n" +
+                "\tfunction loadimgwh(){\n" +
+                "\t\tvar imgs = document.getElementsByTagName(\"img\");\n" +
+                "\t\tvar num = imgs.length;\n" +
+                "\t\tvar imgsurls = new Array();\n"+
+                "\t\tfor(var px=0;px<num;px++){\n"+
+                "\t\t\t\timgs[px].setAttribute(\"position\",''+px);\n"+
+                "\t\t\t\timgsurls[px] = imgs[px].getAttribute(\"data-src\");\n"+
+                "\t\t}\n" +
+                "\t\tfor(var p=0;p<num;p++){\n" +
+                "\t\t\timgs[p].onclick=function()\n" +
+                "\t\t\t{\n" +
+                "\t\t\t\twindow.inwaishe.showImage(this.getAttribute(\"position\"),JSON.stringify(imgsurls));"+
+                "\t\t\t}\n" +
+                "\t\t\tpreLoadImg(imgs[p]);\n" +
+                "\t\t}\n" +
+                "\t}\n" +
+                "\tfunction setimgHideorShow(){\n" +
+                "\t\t\n" +
+                "\t\tvar topScroll = document.documentElement.scrollTop || document.body.scrollTop;\n" +
+                "\t\tdocument.getElementById(\"title\").innerHTML = \"H:\" + windowHeight + \" top:\" + topScroll;\n" +
+                "\t\tvar imgs = document.getElementsByTagName(\"img\");\n" +
+                "\t\tvar num = imgs.length;\n" +
+                "\t\tfor(var p=0;p<num;p++){\n" +
+                "\t\t\tif(imgs[p].offsetTop >= topScroll && imgs[p].offsetTop <= (topScroll + windowHeight)){\n" +
+                "\t\t\t\tif(imgs[p].src != imgs[p].getAttribute(\"data-src\")){\n" +
+                "\t\t\t\t\timgs[p].src = imgs[p].getAttribute(\"data-src\");\n" +
+                "\t\t\t\t}\n" +
+                "\t\t\t}else if((imgs[p].offsetTop + imgs[p].height) < (topScroll + windowHeight) && (imgs[p].offsetTop + imgs[p].height) > topScroll){\n" +
+                "\t\t\t\tif(imgs[p].src != imgs[p].getAttribute(\"data-src\")){\n" +
+                "\t\t\t\t\timgs[p].src = imgs[p].getAttribute(\"data-src\");\n" +
+                "\t\t\t\t}\n" +
+                "\t\t\t}else{\n" +
+                "\t\t\t\tconsole.log(\"src->\" + imgs[p].src);\n" +
+                "\t\t\t\tif(imgs[p].src.toString().indexOf(\"https://ss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=1981777613,4033035273&fm=58&s=4A02EA0ABCC4AE904E3C19860100A0A1&bpow=121&bpoh=75\") > 0){\n" +
+                "\t\t\t\t\t\n" +
+                "\t\t\t\t}else{\n" +
+                "\t\t\t\t\timgs[p].setAttribute(\"src\",\"https://ss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=1981777613,4033035273&fm=58&s=4A02EA0ABCC4AE904E3C19860100A0A1&bpow=121&bpoh=75\");\n" +
+                "\t\t\t\t}\n" +
+                "\t\t\t}\n" +
+                "\t\t}\n" +
+                "\t}\n" +
+                "\tfunction preLoadImg(imgtag){\n" +
+                "\t\tvar tempimg = new Image();\n" +
+                "\t\ttempimg.onload = function(){\n" +
+                "\t\t\timgtag.width = windowWidth;\n" +
+                "\t\t\timgtag.height = tempimg.height*windowWidth/tempimg.width;\n" +
+                "\t\t\timgtag.setAttribute(\"background\",null);\n" +
+                "\t\t\timgtag.border = 1;\n" +
+                "\t\t\tloadwhfinshnum++;\n" +
+                "\t\t\tif(loadwhfinshnum >= totalimgnum){\n" +
+                "\t\t\t\tsetimgHideorShow();\n" +
+                "\t\t\t}\n" +
+                "\t\t}\n" +
+                "\t\ttempimg.src = imgtag.getAttribute(\"data-src\");\n" +
+                "\t}\n" +
+                "\twindow.onscroll = setimgHideorShow;\n" +
+                "\t</script>"
+                + "</html>";
+        /************************************/
+        Document load = Jsoup.parse(Html);
+        Elements elements = load.select("img[src]");
+        for (Element el : elements) {
+            String imgUrl = "http://www.inwaishe.com/" + el.attr("zoomfile");
+            el.attr("src","https://ss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=1981777613,4033035273&fm=58&s=4A02EA0ABCC4AE904E3C19860100A0A1&bpow=121&bpoh=75");
+            el.attr("data-src",imgUrl);
+            el.attr("width", "100%");
+            //el.removeAttr("zoomfile");
+            el.removeAttr("id");
+            el.removeAttr("aid");
+            el.removeAttr("w");
+        }
+        return load.html();
+    }
+
     /**
      * 获得文章详情的Html，并将评论form表单数据填充到 Articlelnfo（来自LiveData）
      * @param artSrc
@@ -203,6 +386,7 @@ public class DataProvider {
         //
         Element re = doc.select("div[class=cmttips]").first().select("a").first();
         articlelnfo.commSrc = re.attr("href");
+        articlelnfo.usrCommNum = Integer.valueOf(re.select("em[class=cmtnum]").first().text());
         //
         //
         Element cform = doc.select("form[id=cform]form[name=cform]").first();
@@ -287,10 +471,10 @@ public class DataProvider {
                 "\t\t\t\t}\n" +
                 "\t\t\t}else{\n" +
                 "\t\t\t\tconsole.log(\"src->\" + imgs[p].src);\n" +
-                "\t\t\t\tif(imgs[p].src.toString().indexOf(\"img/zwt.png\") > 0){\n" +
+                "\t\t\t\tif(imgs[p].src.toString().indexOf(\"https://ss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=1981777613,4033035273&fm=58&s=4A02EA0ABCC4AE904E3C19860100A0A1&bpow=121&bpoh=75\") > 0){\n" +
                 "\t\t\t\t\t\n" +
                 "\t\t\t\t}else{\n" +
-                "\t\t\t\t\timgs[p].setAttribute(\"src\",\"img/zwt.png\");\n" +
+                "\t\t\t\t\timgs[p].setAttribute(\"src\",\"https://ss2.baidu.com/6ONYsjip0QIZ8tyhnq/it/u=1981777613,4033035273&fm=58&s=4A02EA0ABCC4AE904E3C19860100A0A1&bpow=121&bpoh=75\");\n" +
                 "\t\t\t\t}\n" +
                 "\t\t\t}\n" +
                 "\t\t}\n" +
@@ -382,6 +566,27 @@ public class DataProvider {
             original.shareInfos.add(new ShareInfo(imgUrl,title,src));
         }
 
+        /*爬取分享推荐*/
+        div = doc.select("div.cmsofthac").first();
+        lis = div.select("li");
+        original.recommandsInfos.clear();
+        for(Element li : lis){
+            String imgUrl = "http://www.inwaishe.com/" + li.select("img").first().attr("src");
+            String title = li.select("h3").first().text();
+            String src = li.select("a").first().attr("href");
+            original.recommandsInfos.add(new ShareInfo(imgUrl,title,src));
+        }
+
+        /*爬取热门文章列表*/
+        div = doc.select("div.cmsoftkpc").first();
+        lis = div.select("li");
+        original.hotatrsInfos.clear();
+        for(Element li : lis){
+            String title = li.select("a").first().text();
+            String src = li.select("a").first().attr("href");
+            original.hotatrsInfos.add(new ShareInfo(CommonData.LOGO_3_1,title,src));
+        }
+
         /*爬取列表*/
         div = doc.select("div.cmsoftarclist").first();
         lis = div.select("li");
@@ -399,6 +604,7 @@ public class DataProvider {
 
             Element arcstatus = li.select("div.arcstatus").first();
             Element arcavt = arcstatus.select("div.arcavt").first();
+            String avter = arcavt.select("img").first().attr("src");
 
             String author = arcstatus.select("a").get(1).text();
             String num = arcstatus.select("a").get(2).text();
@@ -410,7 +616,7 @@ public class DataProvider {
             String img = "http://www.inwaishe.com/" + shadow.select("img").first().attr("src");
 
             String desc = shadow.select("p").first().text();
-            original.articleInfos.add(new Articlelnfo(title,author,date,img,desc,href,type,Integer.valueOf(num)));
+            original.articleInfos.add(new Articlelnfo(title,author,avter,date,img,desc,href,type,Integer.valueOf(num)));
         }
         original.pageNum++;
         if(original.pageNum > 300){
@@ -458,9 +664,7 @@ public class DataProvider {
                 catid = 27;
                 break;
         }
-        if(original.pageNum == 1){
-            original.articleInfos.clear();
-        }
+
         String url = "http://www.inwaishe.com/portal.php?mod=list&catid=" + catid + "&page=" + original.pageNum;
         Document doc = null;
         try {
@@ -480,13 +684,14 @@ public class DataProvider {
             original.isLoadAll = true;
             return;
         }
+        ArrayList<Articlelnfo> list = new ArrayList<>();
         for(Element item: items){
 
             String title = item.select("a").get(0).text();
             String src = item.select("a").get(0).attr("href");
             String author = item.select("a").get(3).text();
             String num = item.select("a").get(4).text();
-            String iconurl = "http://www.inwaishe.com/" + item.select("img").get(0).attr("src");
+            String iconurl = item.select("img").get(0).attr("src");
             String bgurl = "";
             try {
                 bgurl = "http://www.inwaishe.com/" + item.select("img").get(1).attr("src");
@@ -496,8 +701,13 @@ public class DataProvider {
 
             String desc = item.select("p").first().text();
             String date = item.select("div.arctime").first().text();
-            original.articleInfos.add(new Articlelnfo(title,author,date,bgurl,desc,src,type.toString(),Integer.valueOf(num)));
+            Articlelnfo info = new Articlelnfo(title,author,iconurl,date,bgurl,desc,src,type.toString(),Integer.valueOf(num));
+            list.add(info);
         }
+        if(original.pageNum == 1){
+            original.articleInfos.clear();
+        }
+        original.articleInfos.addAll(list);
         original.pageNum++;
     }
 
@@ -507,9 +717,7 @@ public class DataProvider {
      */
     public void updataVedioPageInfo(MainPageInfo original) throws Exception {
         checkMainThread();
-        if(original.pageNum == 1){
-            original.articleInfos.clear();
-        }
+
         String url = "http://www.inwaishe.com/portal.php?mod=list&catid=" + 3 + "&page=" + original.pageNum;
         Document doc = null;
         try {
@@ -536,11 +744,10 @@ public class DataProvider {
         Articlelnfo info_la = new Articlelnfo(title_la, "", "", imgurl_la, ""
                 , src_la, "视频", "", Integer.parseInt(playtimes_la)
                 , Integer.parseInt(vmsgcount_la));
-        if(original.pageNum == 1){
-            original.articleInfos.add(info_la);
-        }
+
 
         /*小*/
+        ArrayList<Articlelnfo> listsm = new ArrayList<>();
         Elements lis = vsmall.select("li");
         for(Element li : lis){
             String playtimes_sm = li.select("span.vplaycount").first().text();
@@ -551,9 +758,7 @@ public class DataProvider {
             Articlelnfo info_sm = new Articlelnfo(title_sm, "", "", imgurl_sm, ""
                     , src_sm, "视频", "", Integer.parseInt(playtimes_sm)
                     , 0);
-            if(original.pageNum == 1){
-                original.articleInfos.add(info_sm);
-            }
+            listsm.add(info_sm);
         }
         /*列表*/
 
@@ -562,6 +767,7 @@ public class DataProvider {
             original.isLoadAll = true;
             return;
         }
+        ArrayList<Articlelnfo> list = new ArrayList<>();
         for(Element item : items){
             String href = item.select("a").first().attr("href");
             String imgurl = "http://www.inwaishe.com/" + item.select("img").first().attr("src");
@@ -573,8 +779,14 @@ public class DataProvider {
             Articlelnfo info_n = new Articlelnfo(title, usrName, "", imgurl, ""
                     , href, "视频", "", Integer.parseInt(vmsgcount_n)
                     , Integer.parseInt(vplaycount_n));
-            original.articleInfos.add(info_n);
+            list.add(info_n);
         }
+        if(original.pageNum == 1){
+            original.articleInfos.clear();
+            original.articleInfos.add(info_la);//大
+            original.articleInfos.addAll(listsm);//小
+        }
+        original.articleInfos.addAll(list);//列表添加
         original.pageNum++;
     }
 

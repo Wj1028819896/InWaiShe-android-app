@@ -13,7 +13,8 @@
 
 
     <dimen name="cardViewElevation">4dp</dimen>
-    <dimen name="cardViewMargin">0dp</dimen>
+    <dimen name="cardViewMargin">4dp</dimen>
     <dimen name="statusBarHeight">0dp</dimen>
+    <dimen name="cardCornerRadius">6dp</dimen>
 
 </resources>

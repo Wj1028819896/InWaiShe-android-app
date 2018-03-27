@@ -4,6 +4,7 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -30,6 +31,7 @@ import com.inwaishe.app.viewmodel.NewsPagerViewModel;
 public class NewsListFragment extends LazyFragment {
     public static final String TAG = "NewsListFragment";
     RecyclerView recyclerView;
+    SwipeRefreshLayout swipeRefreshLayout;
     NewsPagerViewModel newsPagerViewModel;
     NewsListAdapter newsListAdapter;
     public NewsTypes Type;
@@ -39,6 +41,7 @@ public class NewsListFragment extends LazyFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootview = super.onCreateView(inflater, container, savedInstanceState);
         recyclerView = (RecyclerView) rootview.findViewById(R.id.rvNewsList);
+        swipeRefreshLayout = (SwipeRefreshLayout) rootview.findViewById(R.id.srL);
         return rootview;
     }
 
@@ -66,6 +69,7 @@ public class NewsListFragment extends LazyFragment {
                             newsListAdapter.setLoadingMore(false);
                             newsListAdapter.setLoadAll(mainPageInfo.isLoadAll);
                             newsListAdapter.notifyDataSetChanged();
+                            swipeRefreshLayout.setRefreshing(false);
                             if(mainPageInfo.code < 0){
                                 Toast.makeText(getActivity(),"" + mainPageInfo.msg,Toast.LENGTH_SHORT).show();
                             }
@@ -87,10 +91,22 @@ public class NewsListFragment extends LazyFragment {
         });
 
         recyclerView.setAdapter(newsListAdapter);
+        swipeRefreshLayout.setColorSchemeResources(
+                R.color.colorAccent,
+                android.R.color.holo_green_light,
+                android.R.color.holo_orange_light,
+                android.R.color.holo_red_light);
+        swipeRefreshLayout.setOnRefreshListener(refreshListener);
 
         lazyLoad();
     }
 
+    private SwipeRefreshLayout.OnRefreshListener refreshListener = new SwipeRefreshLayout.OnRefreshListener() {
+        @Override
+        public void onRefresh() {
+            loadDataForRefresh();
+        }
+    };
     @Override
     protected void onVisible() {
         super.onVisible();
@@ -114,7 +130,11 @@ public class NewsListFragment extends LazyFragment {
     protected void loadData() {
         super.loadData();
         Log.e(TAG,"loadData" + Type);
-        newsPagerViewModel.loadData(Type);
+        newsPagerViewModel.loadData(Type,false);
+    }
+
+    protected void loadDataForRefresh(){
+        newsPagerViewModel.loadData(Type,true);
     }
 
     public static NewsListFragment getInStance(String type){

@@ -13,9 +13,11 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -48,7 +50,9 @@ public class RefreshRecyclerView extends RecyclerView {
     //Contxet
     private Context mContext;
     //
-    int startY = 0;
+    int startY = 0,startX = 0;
+    //阻尼系数
+    float mDampRatio = 0.75f;
     //第一个可见的VIEW
     int firstVisiblePosition = -1;
     //是否正在刷新
@@ -56,8 +60,12 @@ public class RefreshRecyclerView extends RecyclerView {
     //加载更多，所有加载完
     private boolean isLoadingMore = false;
     private boolean isLoadAll = false;
+    private boolean isLoadMoreNetError = false;
 
     RefreshListener mRefreshListener;
+
+    //普通手势监听
+    GestureDetector mGestureDetector;
 
     public RefreshRecyclerView(Context context) {
         this(context,null);
@@ -130,13 +138,30 @@ public class RefreshRecyclerView extends RecyclerView {
             void changeViewByState(int state) {
                 SpinKitView pb = (SpinKitView) getFooterView().findViewById(R.id.footer_pb);
                 TextView tv = (TextView)getFooterView().findViewById(R.id.footer_txt);
+                TextView netError = (TextView)getFooterView().findViewById(R.id.retryLoad);
                 if(state == FooterviewComm.STATE_LOADALL){
                     pb.setVisibility(GONE);
                     tv.setVisibility(VISIBLE);
+                    netError.setVisibility(GONE);
                 }else if(state == FooterviewComm.STATE_NORMAL){
                     pb.setVisibility(VISIBLE);
                     tv.setVisibility(GONE);
+                    netError.setVisibility(GONE);
+                }else if(state == FooterviewComm.STATE_NETERROE){
+                    pb.setVisibility(GONE);
+                    tv.setVisibility(GONE);
+                    netError.setVisibility(VISIBLE);
                 }
+                getFooterView().setOnClickListener(new OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if(isLoadMoreNetError){
+                            changeViewByState(FooterviewComm.STATE_NORMAL);
+                            mRefreshListener.onLoadingMore();
+                            isLoadMoreNetError = false;
+                        }
+                    }
+                });
             }
         };
         FooterviewComm.setFooterView(FooterView);
@@ -147,8 +172,19 @@ public class RefreshRecyclerView extends RecyclerView {
         this.HeaderViewComm = headerViewComm;
     }
 
+    public View getHeaderView(){
+        return this.HeaderViewComm.getHeaderView();
+    }
+
     public void setFooterView(RefreshFooterViewComm footerViewComm){
         this.FooterviewComm = footerViewComm;
+    }
+
+    /**
+     * 刷新开始
+     */
+    public void refreshingStart(){
+        isRrefreshing = true;
     }
     /**
      * 刷新完成
@@ -158,7 +194,12 @@ public class RefreshRecyclerView extends RecyclerView {
         HeaderViewComm.hideHeaderView(this,true);
 
     }
-
+    /**
+     * 加载更多开始
+     */
+    public void loadMoreStart(){
+        isLoadingMore = true;
+    }
     /**
      * 加载更多完成
      */
@@ -166,6 +207,13 @@ public class RefreshRecyclerView extends RecyclerView {
         isLoadingMore = false;
     }
 
+    /**
+     * 加载更多时网络是否异常
+     * @param isNetError
+     */
+    public void setLoadMoreNetError(boolean isNetError){
+        this.isLoadMoreNetError = isNetError;
+    }
     /**
      * 设置是否加载完所有数据
      * @param isLoadAll
@@ -199,69 +247,14 @@ public class RefreshRecyclerView extends RecyclerView {
                 if(lastVisibleItemPosition == (getAdapter().getItemCount() - 1)){
                     //footer 可见
                     if(!isLoadingMore
+                            && !isRrefreshing
                             && mRefreshListener!=null
+                            && !isLoadMoreNetError
                             && !isLoadAll){
                         isLoadingMore = true;
                         mRefreshListener.onLoadingMore();
                     }
                 }
-            }
-        });
-        this.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                Log.e(TAG,"onTouch");
-                checkIstop();
-                if(isTop && !isRrefreshing){
-                    switch (event.getAction()){
-                        case MotionEvent.ACTION_DOWN:
-                            startY = (int) event.getY();
-                            Log.e(TAG, "startY = " + startY);
-                            break;
-                        case MotionEvent.ACTION_MOVE:
-                            if (startY == 0) {
-                                startY = (int) event.getY();
-                                Log.e(TAG, "startY = " + startY);
-                            } else {
-                                Log.e(TAG, "nowY = " + (int) event.getY());
-                                int ds = (int) event.getY() - startY;
-                                if (ds < 0) {
-                                    //向上滑动
-                                    if (HeaderViewComm.getHeaderView().getMeasuredHeight() > 0) {
-                                        //高度大于0 才可向上滑动
-                                        Log.e(TAG, "向上滑动-> " + ds);
-                                        HeaderViewComm.setHeaderViewHeight(
-                                                RefreshRecyclerView.this,
-                                                (HeaderViewComm.HeaderViewHeight + ds) < 0
-                                                        ?
-                                                        0 :
-                                                        (HeaderViewComm.HeaderViewHeight + ds));
-                                    }else{
-                                        return false;
-                                    }
-                                } else {
-                                    //向下滑动
-                                    HeaderViewComm.setHeaderViewHeight(RefreshRecyclerView.this,HeaderViewComm.HeaderViewHeight + ds / 2);
-                                }
-                                startY = (int) event.getY();
-                            }
-                            break;
-                        case MotionEvent.ACTION_UP:
-                            startY = 0;
-                            if (HeaderViewComm.getHeaderView().getMeasuredHeight() > (HeaderViewComm.HeaderViewRefreshRadio * HeaderViewComm.OrignalHeaderViewHeight)) {
-                                HeaderViewComm.hideHeaderView(RefreshRecyclerView.this,false);
-                                if(mRefreshListener != null){
-                                    isRrefreshing = true;
-                                    mRefreshListener.onRefresh();
-                                }
-                            } else {
-                                HeaderViewComm.hideHeaderView(RefreshRecyclerView.this,true);
-                            }
-                            break;
-                    }
-                    return true;
-                }
-               return false;
             }
         });
     }
@@ -286,7 +279,7 @@ public class RefreshRecyclerView extends RecyclerView {
             position = ((StaggeredGridLayoutManager)ob).findFirstVisibleItemPositions(firstInto)[0];
         }
         firstVisiblePosition = position;
-        Log.e(TAG,"first = " + position);
+        //Log.e(TAG,"first = " + position);
         if(position == 1 || position == 0){
             View firstVisiableChildView = ob.findViewByPosition(position);
             if(firstVisiableChildView.getTop() == 0){
@@ -355,7 +348,11 @@ public class RefreshRecyclerView extends RecyclerView {
                 if(isLoadAll){
                     FooterviewComm.changeViewByState(RefreshFooterViewComm.STATE_LOADALL);
                 }else{
-                    FooterviewComm.changeViewByState(RefreshFooterViewComm.STATE_NORMAL);
+                    if(isLoadMoreNetError){
+                        FooterviewComm.changeViewByState(RefreshFooterViewComm.STATE_NETERROE);
+                    }else{
+                        FooterviewComm.changeViewByState(RefreshFooterViewComm.STATE_NORMAL);
+                    }
                 }
             }else {
                 mAdapter.onBindViewHolder(viewHolder,position - HeaderViewCount);
@@ -407,30 +404,85 @@ public class RefreshRecyclerView extends RecyclerView {
     @Override
     public void onScrolled(int dx, int dy) {
         /**滚动距离**/
-        Log.e(TAG,"onScrolled--> " + dy);
+        //Log.e(TAG,"onScrolled--> " + dy);
         super.onScrolled(dx, dy);
+        checkIstop();
         if(mRefreshListener != null){
-            mRefreshListener.onChange(dx,dy,HeaderViewComm.getCrxState());
+                mRefreshListener.onChange(dx,dy,HeaderViewComm.getCrxState());
         }
     }
 
     @Override
     protected void onScrollChanged(int l, int t, int oldl, int oldt) {
-        Log.e(TAG,"onScrollChanged");
+        //Log.e(TAG,"onScrollChanged");
         super.onScrollChanged(l, t, oldl, oldt);
     }
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent e) {
         boolean su = super.onInterceptTouchEvent(e);
-        Log.e(TAG,"onInterceptTouchEvent = " + su);
+        //Log.e(TAG,"onInterceptTouchEvent = " + su);
         return su;
     }
 
     @Override
-    public boolean onTouchEvent(MotionEvent e) {
-        boolean su = super.onTouchEvent(e);
-        Log.e(TAG,"onTouchEvent = " + su);
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        boolean su = super.dispatchTouchEvent(ev);
+        //Log.e(TAG,"dispatchTouchEvent = " + su);
         return su;
+    }
+    private boolean isOnTop() {
+        if(HeaderViewComm == null)
+            return false;
+        if (HeaderViewComm.getHeaderView().getParent() != null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        if(startY == 0){
+            startY = (int) event.getRawY();
+        }
+        switch (event.getAction()){
+            case MotionEvent.ACTION_DOWN:
+                startY = (int) event.getRawY();
+                break;
+            case MotionEvent.ACTION_MOVE:
+                int dsY = (int) (event.getRawY()) - startY;
+                startY = (int) event.getRawY();
+                if(isOnTop() && !isRrefreshing){
+                    if(dsY > 0){
+                        HeaderViewComm.setHeaderViewHeight(RefreshRecyclerView.this, HeaderViewComm.HeaderViewHeight + (int)(dsY * mDampRatio));
+                    }else{
+                        if (HeaderViewComm.getHeaderView().getMeasuredHeight() > 0){
+                            HeaderViewComm.setHeaderViewHeight(
+                                        RefreshRecyclerView.this,
+                                        (HeaderViewComm.HeaderViewHeight + (int)(dsY/mDampRatio)) < 0
+                                                ?
+                                                0 :
+                                                (HeaderViewComm.HeaderViewHeight + (int)(dsY/mDampRatio)));
+                        }
+                    }
+                    if (HeaderViewComm.getHeaderView().getMeasuredHeight() > 0){
+                        return false;
+                    }
+                }
+                break;
+            default:
+                startY = 0;
+                    if (HeaderViewComm.getHeaderView().getMeasuredHeight() > (HeaderViewComm.HeaderViewRefreshRadio * HeaderViewComm.OrignalHeaderViewHeight)) {
+                        HeaderViewComm.hideHeaderView(RefreshRecyclerView.this, false);
+                        if (mRefreshListener != null && !isRrefreshing) {
+                            isRrefreshing = true;
+                            mRefreshListener.onRefresh();
+                        }
+                    } else {
+                        HeaderViewComm.hideHeaderView(RefreshRecyclerView.this, true);
+                    }
+                break;
+        }
+        return super.onTouchEvent(event);
     }
 }

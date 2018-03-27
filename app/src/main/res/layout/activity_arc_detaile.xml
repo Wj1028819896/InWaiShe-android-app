@@ -94,7 +94,7 @@
             android:id="@+id/tabSlide"
             android:layout_width="match_parent"
             android:layout_height="40dp"
-            android:background="@color/background_dark"
+            android:background="@color/colorPrimary"
             app:tl_indicator_color="@color/holo_blue_dark"
             app:tl_indicator_height="3dp"
             app:tl_indicator_corner_radius="1.5dp"

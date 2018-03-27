@@ -32,4 +32,13 @@ public class CommonData {
 
     public static String UID = "usr_id";
 
+    public static String LOGO_3_1 = "http://www.inwaishe.com/data/attachment/forum/201708/29/174753ozrzojo5795vjggj.jpg";
+
+
+    public static String PIC_URLS = "PIC_URLS";
+    public static String PIC_INDEX = "PIC_INDEX";
+    public static String PIC_ARTTITLE = "PIC_ARTTITLE";
+    public static String PIC_ARTREADNUM = "PIC_ARTREADNUM";
+    public static String PIC_ARTCOMMENTNUM = "PIC_ARTCOMMENTNUM";
+    public static String PIC_ARTAUTHOR = "PIC_ARTAUTHOR";
 }

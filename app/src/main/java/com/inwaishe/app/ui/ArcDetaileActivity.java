@@ -54,13 +54,13 @@ import com.inwaishe.app.common.GlideUtils;
 import com.inwaishe.app.common.MediaUtils;
 import com.inwaishe.app.common.XAnimatorListener;
 import com.inwaishe.app.dataprovider.DataProvider;
+import com.inwaishe.app.dataprovider.BiliVedioDataProvider;
 import com.inwaishe.app.entity.mainpage.Articlelnfo;
 import com.inwaishe.app.entity.video.BiliVideoInfo;
 import com.inwaishe.app.framework.activitytrans.EnterActivityTool;
 import com.inwaishe.app.framework.arch.bus.XBus;
 import com.inwaishe.app.framework.webviewstyleselector.StyleSelectDialogFragment;
 import com.inwaishe.app.http.OkCookieJar;
-import com.inwaishe.app.http.downloadfile.DownLoad;
 import com.inwaishe.app.media.MediaPlayerActivity;
 import com.inwaishe.app.http.OkHttpUtils;
 import com.inwaishe.app.ui.fragment.ArcCommFragment;
@@ -90,6 +90,7 @@ import static android.support.design.widget.AppBarLayout.LayoutParams.SCROLL_FLA
 public class ArcDetaileActivity extends BaseActivity implements EmotionKeyBoardMainDialogFragment.DialogFragmentDataCallback,LifecycleRegistryOwner{
 
     private AppBarLayout mAppBarLayout;
+    public static String EVENT_FONTSIZE_CHANGE = "EVENT_FONTSIZE_CHANGE";
     private Toolbar mToolbar;
     private ActionMenuView mActionMenuView;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
@@ -211,17 +212,27 @@ public class ArcDetaileActivity extends BaseActivity implements EmotionKeyBoardM
                     Toast.makeText(ArcDetaileActivity.this,"字体设置",Toast.LENGTH_SHORT).show();
                     StyleSelectDialogFragment styleSelectDialogFragment = new StyleSelectDialogFragment();
                     styleSelectDialogFragment.show(getSupportFragmentManager(),"StyleSelectDialogFragment");
-                }
-                return true;
-            }
-        });
-        mToolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
-            @Override
-            public boolean onMenuItemClick(MenuItem menuItem) {
-                Toast.makeText(ArcDetaileActivity.this,"字体设置",Toast.LENGTH_SHORT).show();
-                if(menuItem.getItemId() == R.id.toolbar_menu_font){
-                    StyleSelectDialogFragment styleSelectDialogFragment = new StyleSelectDialogFragment();
-                    styleSelectDialogFragment.show(getSupportFragmentManager(),"StyleSelectDialogFragment");
+                    styleSelectDialogFragment.setfontSizeChangeListener(new StyleSelectDialogFragment.FontSizeChangeListener() {
+                        @Override
+                        public void onChanged(int position, String scaleWord) {
+                            int fontSize = 8;
+                            switch (position){
+                                case 0:
+                                    fontSize = 12;
+                                    break;
+                                case 1:
+                                    fontSize = 16;
+                                    break;
+                                case 2:
+                                    fontSize = 20;
+                                    break;
+                                case 3:
+                                    fontSize = 24;
+                                    break;
+                            }
+                            XBus.getInstance().post(EVENT_FONTSIZE_CHANGE,Integer.valueOf(fontSize));
+                        }
+                    });
                 }
                 return true;
             }
@@ -246,6 +257,13 @@ public class ArcDetaileActivity extends BaseActivity implements EmotionKeyBoardM
         mArticleInfo = (Articlelnfo) getIntent().getSerializableExtra("ARTICLE_INFO");
         arcType = mArticleInfo.arcType;
         GlideUtils.disPlayUrl(this,mArticleInfo.artImageUrl,mIvImgBg);
+//        mAppBarLayout.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+//            @Override
+//            public boolean onPreDraw() {
+//                GlideUtils.disPlayUrlBackground(ArcDetaileActivity.this,mArticleInfo.artImageUrl,mAppBarLayout);
+//                return true;
+//            }
+//        });
         mCollapsingToolbarLayout.setTitle("");
         mToolbar.setTitle("");
         mToolBarTitle.setText("" + mArticleInfo.artTitle);
@@ -477,7 +495,7 @@ public class ArcDetaileActivity extends BaseActivity implements EmotionKeyBoardM
             @Override
             public void run() {
                 try {
-                    final BiliVideoInfo biliVideoInfo = DownLoad.getFirstVideo(avid);
+                    final BiliVideoInfo biliVideoInfo = BiliVedioDataProvider.getFirstVideo(avid);
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

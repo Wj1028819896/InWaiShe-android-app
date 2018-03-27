@@ -28,7 +28,7 @@ public abstract class RefrshHeaderViewComm {
     public int HeaderViewHeight = 0;//动态高度
     public int OrignalHeaderViewHeight = 0;//原始状态高度
 
-    public float HeaderViewRefreshRadio = 2.3f;//顶部VIEW 拉伸到可刷新的倍数
+    public float HeaderViewRefreshRadio = 2.0f;//顶部VIEW 拉伸到可刷新的倍数
 
     public View getHeaderView() {
         return HeaderView;

@@ -152,7 +152,7 @@ public class AppUtils {
      * @param webPageUrl url
      * @param webPageDesc 描述
      */
-    public static void shareWebPageToWxCircle(Context context,ImageView imageView
+    public static void shareWebPageToWxCircle(Context context,View imageView
             ,String webPageTitle,String webPageUrl,String webPageDesc){
 
         IWXAPI api = WXAPIFactory.createWXAPI(context,"wx2192cbd952fd8dce");
@@ -182,7 +182,7 @@ public class AppUtils {
      * @param webPageUrl url
      * @param webPageDesc 描述
      */
-    public static void shareWebPageToWxFriends(Context context,ImageView imageView
+    public static void shareWebPageToWxFriends(Context context,View imageView
             ,String webPageTitle,String webPageUrl,String webPageDesc){
 
         IWXAPI api = WXAPIFactory.createWXAPI(context,"wx2192cbd952fd8dce");

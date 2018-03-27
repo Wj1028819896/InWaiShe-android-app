@@ -7,7 +7,7 @@ import android.arch.lifecycle.MutableLiveData;
 
 import com.inwaishe.app.dataprovider.DataProvider;
 import com.inwaishe.app.entity.mainpage.MainPageInfo;
-import com.inwaishe.app.http.downloadfile.ThreadPollUtil;
+import com.inwaishe.app.http.ThreadPollUtil;
 
 /**
  * Created by Administrator on 2017/8/16 0016.
@@ -33,13 +33,16 @@ public class VedioPagerViewModel extends AndroidViewModel {
         mainPageInfoLiveData.setValue(new MainPageInfo());
     }
 
-    public void loadData(){
+    public void loadData(final boolean isRefresh){
         //爬虫抓数据
         Thread exe = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
                     MainPageInfo mainPageInfo = mainPageInfoLiveData.getValue();
+                    if(isRefresh){
+                        mainPageInfo.pageNum = 1;
+                    }
                     new DataProvider().updataVedioPageInfo(mainPageInfo);
                     mainPageInfoLiveData.postValue(mainPageInfo);
                 } catch (Exception e) {

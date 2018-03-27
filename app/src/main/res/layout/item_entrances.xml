@@ -4,27 +4,28 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
-    android:background="@color/bgcolor">
+    android:background="@color/itembg">
         <LinearLayout
             android:layout_marginTop="5dp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
             <LinearLayout
+                android:id="@+id/llPhotoCenter"
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:gravity="center">
                 <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    app:srcCompat="@drawable/ic_keyboard_black_50dp"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    app:srcCompat="@drawable/ic_photos"
                     />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="键盘"
+                    android:text="摄影作品"
                     android:textSize="@dimen/default_small_text_size"
                     android:textColor="@color/colorPrimary"/>
             </LinearLayout>
@@ -35,14 +36,14 @@
                 android:orientation="vertical"
                 android:gravity="center">
                 <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    app:srcCompat="@drawable/ic_mouse_black_50dp"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    app:srcCompat="@drawable/ic_olddev"
                     />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="鼠标"
+                    android:text="闲置交易"
                     android:textSize="@dimen/default_small_text_size"
                     android:textColor="@color/colorPrimary"/>
             </LinearLayout>
@@ -53,14 +54,14 @@
                 android:orientation="vertical"
                 android:gravity="center">
                 <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    app:srcCompat="@drawable/ic_devices_other_black_50dp"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    app:srcCompat="@drawable/ic_paper"
                     />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="周边"
+                    android:text="至in大字报"
                     android:textSize="@dimen/default_small_text_size"
                     android:textColor="@color/colorPrimary"/>
             </LinearLayout>
@@ -71,21 +72,21 @@
                 android:orientation="vertical"
                 android:gravity="center">
                 <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    app:srcCompat="@drawable/ic_headset_black_50dp"
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    app:srcCompat="@drawable/ic_more"
                     />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="音频"
+                    android:text="更多"
                     android:textSize="@dimen/default_small_text_size"
                     android:textColor="@color/colorPrimary"/>
             </LinearLayout>
         </LinearLayout>
     <View
         android:layout_width="match_parent"
-        android:layout_height="1px"
+        android:layout_height="2px"
         android:layout_marginTop="5dp"
-        android:background="@drawable/shadow"/>
+        android:background="@color/bgcolor"/>
 </LinearLayout>

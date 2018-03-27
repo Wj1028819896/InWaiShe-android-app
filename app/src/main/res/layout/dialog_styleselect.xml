@@ -4,13 +4,13 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/pureWhite">
+    android:background="@color/itembg">
     <TextView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="?actionBarSize"
         android:gravity="center_vertical"
-        android:layout_marginLeft="20dp"
-        android:textColor="@color/colorAccent"
+        android:layout_gravity="center"
+        android:textColor="@color/itemTextDate"
         android:textSize="@dimen/default_medium_text_size"
         android:text="显示设置"/>
     <LinearLayout
@@ -24,6 +24,7 @@
             app:srcCompat="@drawable/ic_sunsmall"
             android:layout_marginLeft="20dp"/>
         <android.support.v7.widget.AppCompatSeekBar
+            android:id="@+id/brightNessSeerBar"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="?actionBarSize"
@@ -49,6 +50,7 @@
             app:srcCompat="@drawable/ic_asmall"
             android:layout_marginLeft="20dp"/>
         <com.inwaishe.app.framework.webviewstyleselector.widget.NumSeekBar
+            android:id="@+id/fontSizeSeerBar"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="?actionBarSize"
@@ -61,6 +63,22 @@
             app:srcCompat="@drawable/ic_abig"
             android:layout_marginRight="20dp"/>
     </LinearLayout>
-
-
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:background="@color/bgcolor"/>
+    <Button
+        android:id="@+id/btnCancel"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:text="返回"
+        android:gravity="center"
+        android:layout_gravity="center_horizontal"
+        android:textColor="@color/orange"
+        android:textSize="@dimen/default_medium_text_size"
+        android:background="?android:attr/selectableItemBackground"/>
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:background="@color/bgcolor"/>
 </LinearLayout>

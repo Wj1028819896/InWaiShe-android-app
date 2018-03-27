@@ -58,7 +58,10 @@
         <activity
             android:name=".media.MediaPlayerActivity"
             android:screenOrientation="landscape" />
-        <activity android:name=".base.BaseActivity"></activity>
+        <activity android:name=".base.BaseActivity" />
+        <activity android:name=".ui.display.DisplayActivity" />
+        <activity android:name=".ui.PhotoCenterActivity" />
+        <activity android:name=".ui.display.ImageShowActivity"></activity>
     </application>
 
 </manifest>

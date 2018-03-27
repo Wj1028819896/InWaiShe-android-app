@@ -19,8 +19,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.fivehundredpx.greedolayout.GreedoLayoutManager;
+import com.fivehundredpx.greedolayout.GreedoLayoutSizeCalculator;
+import com.fivehundredpx.greedolayout.GreedoSpacingItemDecoration;
 import com.github.ybq.android.spinkit.SpinKitView;
 import com.inwaishe.app.R;
+import com.inwaishe.app.common.AppUtils;
 import com.inwaishe.app.common.GlideUtils;
 import com.inwaishe.app.entity.mainpage.Articlelnfo;
 import com.inwaishe.app.entity.mainpage.MainPageInfo;
@@ -38,7 +42,7 @@ import java.util.Random;
  * Created by Administrator on 2017/8/15 0015.
  */
 
-public class VedioListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>{
+public class VedioListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements GreedoLayoutSizeCalculator.SizeCalculatorDelegate {
 
     private Context mContext;
     private LayoutInflater mInflater;
@@ -46,12 +50,15 @@ public class VedioListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
 
     private RecyclerView recyclerView;
     private GridLayoutManager gridLayoutManager;
+    private GreedoLayoutManager greedoLayoutManager;
     private OnLoadOrRefreshListener onLoadOrRefreshListener;
     private boolean isLoadingMore = false;
     private boolean isLoadAll = false;
 
     public static final int VIEWTYPE_LIST = 1;//文章List
     public static final int VIEWTYPE_FOOTER = 2;//加载更多
+
+    private double[] aspectRatios = {2d,1.5d,0.5d,1d};
 
     public VedioListAdapter(RecyclerView recyclerView,Context context, MainPageInfo mainPageInfo){
         this.mContext = context;
@@ -76,12 +83,15 @@ public class VedioListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
         gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                if(position == (getItemCount() -1) || position == 0){
-                    return 2;
-                }
-                return (position % 3 == 0) ? 2 : 1;
+                return 2;
             }
         });
+
+        //greedoLayoutManager = new GreedoLayoutManager(this);
+        //greedoLayoutManager.setMaxRowHeight(AppUtils.dip2px(mContext,150));
+        //greedoLayoutManager.setAutoMeasureEnabled(true);
+        //int spacing = AppUtils.dip2px(mContext, 4);
+        //recyclerView.addItemDecoration(new GreedoSpacingItemDecoration(spacing));
         recyclerView.setLayoutManager(gridLayoutManager);
 
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -105,6 +115,13 @@ public class VedioListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 }
             }
         });
+    }
+
+    @Override
+    public double aspectRatioForIndex(int position) {
+        Random rand = new Random();
+        int index = rand.nextInt(aspectRatios.length);
+        return aspectRatios[index];
     }
 
     public interface OnLoadOrRefreshListener{

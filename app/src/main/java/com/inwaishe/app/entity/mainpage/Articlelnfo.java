@@ -14,6 +14,7 @@ public class Articlelnfo implements Serializable {
 
     public String artTitle = "";//标题
     public String artAuthor = "";//作者
+    public String artAuthorAvter = "";//头像
     public String artDate = "";//发布时间
     public String artImageUrl = "";//图片地址
     public String artDesc = "";//简介
@@ -23,6 +24,7 @@ public class Articlelnfo implements Serializable {
     public String youku = "";
     public int vedioPlayNum = 0;//视频播放数
     public int usrCommNum = 0;//评论数
+    public int artReadTimes = 0;//阅读书目
     public ReplyFrom replyFrom = new ReplyFrom();//回复表单数据
     public String commSrc = "";//评论完整论坛地址
     public ArrayList<ArcCommInfo> arcCommInfos = new ArrayList<>();//评论列表数据
@@ -39,9 +41,14 @@ public class Articlelnfo implements Serializable {
         public String commentsubmit = "";
         public String commentsubmit_btn = "true";
         public String message = "";
+        public String posttime = "";
+        public String usesig = "";
+        public String subject = "";
 
     }
+    public Articlelnfo(){
 
+    }
     public Articlelnfo(String artTitle, String artAuthor, String artDate, String artImageUrl, String artDesc, String artSrc, String arcType, String avid, int vedioPlayNum, int usrCommNum) {
         this.artTitle = artTitle;
         this.artAuthor = artAuthor;
@@ -65,9 +72,10 @@ public class Articlelnfo implements Serializable {
         this.arcType = arcType;
     }
 
-    public Articlelnfo(String artTitle, String artAuthor, String artDate, String artImageUrl, String artDesc, String artSrc, String arcType,int usrCommNum) {
+    public Articlelnfo(String artTitle, String artAuthor,String artAuthorAvter,String artDate, String artImageUrl, String artDesc, String artSrc, String arcType,int usrCommNum) {
         this.artTitle = artTitle;
         this.artAuthor = artAuthor;
+        this.artAuthorAvter = artAuthorAvter;
         this.artDate = artDate;
         this.artImageUrl = artImageUrl;
         this.artDesc = artDesc;

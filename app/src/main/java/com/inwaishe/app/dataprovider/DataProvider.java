@@ -414,6 +414,38 @@ public class DataProvider {
 
         Element tableElement = doc.select("table").get(1);
 
+        if("视频".equals(articlelnfo.arcType)){
+            if(tableElement.select("iframe").size() > 0){
+                //youku
+                String src = tableElement.select("iframe").get(0).attr("src");
+                if(src.contains("youku")){
+                    articlelnfo.youku = src;
+                }else if(src.contains("bilibili")){
+                    if(src.startsWith("//")){
+                        tableElement.select("iframe").get(0).attr("src","https:" + src);
+                    }
+                    int s = src.indexOf("?");
+                    String params = src.substring(s + 1,src.length()-1);
+                    String[] ps = params.split("&");
+                    for(String param : ps){
+                        String[] kv = param.split("=");
+                        if("aid".equals(kv[0])){
+                            articlelnfo.avid = kv[1];
+                            break;
+                        }
+                    }
+                }
+
+            }
+            if(tableElement.select("embed").size() > 0){
+                //Bilibili 视频号
+                String flashvars = tableElement.select("embed").first().attr("flashvars");
+                int end = flashvars.indexOf("&");
+                String avid = flashvars.substring(4,end);
+                articlelnfo.avid = avid;
+            }
+        }
+
         String table = tableElement.html();
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MyApplication.con);
@@ -496,20 +528,6 @@ public class DataProvider {
                 "\twindow.onscroll = setimgHideorShow;\n" +
                 "\t</script>"
                 + "</html>";
-        if("视频".equals(articlelnfo.arcType)){
-            if(tableElement.select("iframe").size() > 0){
-                //youku
-                String src = tableElement.select("iframe").get(0).attr("src");
-                articlelnfo.youku = src;
-            }
-            if(tableElement.select("embed").size() > 0){
-                //Bilibili 视频号
-                String flashvars = tableElement.select("embed").first().attr("flashvars");
-                int end = flashvars.indexOf("&");
-                String avid = flashvars.substring(4,end);
-                articlelnfo.avid = avid;
-            }
-        }
         Document load = Jsoup.parse(Html);
         Elements elements = load.select("img[src]");
         for (Element el : elements) {

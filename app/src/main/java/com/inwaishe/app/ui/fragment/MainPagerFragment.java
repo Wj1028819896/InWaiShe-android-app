@@ -4,6 +4,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.view.menu.MenuView;
@@ -32,6 +33,8 @@ import com.inwaishe.app.entity.mainpage.MainPageInfo;
 import com.inwaishe.app.entity.mainpage.UserInfo;
 import com.inwaishe.app.framework.arch.bus.XBus;
 import com.inwaishe.app.framework.arch.bus.XBusObserver;
+import com.inwaishe.app.ui.MainActivity;
+import com.inwaishe.app.ui.SearchResultActivity;
 import com.inwaishe.app.viewmodel.MainPagerViewModel;
 import com.inwaishe.app.widget.LoadingNetErrorView;
 import com.inwaishe.app.widget.TitleItemDecoration;
@@ -160,6 +163,12 @@ public class MainPagerFragment extends LazyFragment {
             @Override
             public void onChange(int dx, int dy, int headerstate) {
                 changeTopBarViewByDy(headerstate);
+            }
+        });
+        searchBar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getActivity().startActivity(new Intent(getActivity(), SearchResultActivity.class));
             }
         });
         loadData();

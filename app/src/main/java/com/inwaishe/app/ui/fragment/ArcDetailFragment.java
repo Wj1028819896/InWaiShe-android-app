@@ -114,6 +114,8 @@ public class ArcDetailFragment extends LazyFragment {
         arcDetailViewModel.getDocumentMutableLiveData().observe(this, new Observer<Document>() {
             @Override
             public void onChanged(@Nullable Document document) {
+
+                XBus.getInstance().post(ArcDetaileActivity.EVENT_PLAYBUTTON_SETVISIBLEORNO,null);
                 if(TextUtils.isEmpty(document.html())){
                     return;
                 }

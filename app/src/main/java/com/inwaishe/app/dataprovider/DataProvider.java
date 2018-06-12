@@ -3,6 +3,7 @@ package com.inwaishe.app.dataprovider;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v4.util.ArrayMap;
@@ -11,6 +12,8 @@ import android.text.TextUtils;
 import com.inwaishe.app.common.CommonData;
 import com.inwaishe.app.dbroom.NewsTypes;
 import com.inwaishe.app.dbroom.SharePreferencesStore;
+import com.inwaishe.app.entity.SearchResBackInfo;
+import com.inwaishe.app.entity.SearchResItemInfo;
 import com.inwaishe.app.entity.mainpage.ArcCommInfo;
 import com.inwaishe.app.entity.mainpage.ArcReplyCommInfo;
 import com.inwaishe.app.entity.mainpage.Articlelnfo;
@@ -34,8 +37,10 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import okhttp3.Cookie;
 import okhttp3.OkHttpClient;
@@ -48,6 +53,98 @@ public class DataProvider {
 
 
     public DataProvider(){
+
+    }
+
+    /**
+     * 搜索
+     * @param searchResBackInfo
+     * @param key 关键字
+     * @throws Exception
+     */
+    public void getSearchResInfo(SearchResBackInfo searchResBackInfo,String key) throws Exception {
+        checkMainThread();
+        //http://www.inwaishe.com/search.php?mod=portal&srchtxt=ducky&searchsubmit=yes
+        Document doc = Jsoup.connect("http://www.inwaishe.com/search.php?"
+                        + "mod=portal&searchsubmit=yes"
+                        + "&srchtxt=" + key
+                )
+                .header("Cookie",getLoginCookies(MyApplication.con))
+                .get();
+
+        String url = doc.location();//会重定向地址
+        Uri uri = Uri.parse(url);
+        String searchid = "";
+        Set<String> set = uri.getQueryParameterNames();
+        for (Iterator iterator = set.iterator(); iterator.hasNext();) {
+            String name = (String) iterator.next();
+            String value = uri.getQueryParameter(name);
+            if("searchid".equals(name)){
+                searchid = value;
+                break;
+            }
+        }
+
+        doc = Jsoup.connect("http://www.inwaishe.com/search.php?"
+                + "mod=portal&searchsubmit=yes"
+                + "&searchid=" + searchid
+                + "&kw=" + key
+                + "&page=" + searchResBackInfo.pageNum
+                )
+                .header("Cookie",getLoginCookies(MyApplication.con))
+                .get();
+
+        if(searchResBackInfo.pageNum == 1){
+            searchResBackInfo.list.clear();
+        }
+        searchResBackInfo.code = 1;
+        searchResBackInfo.msg = "success";
+
+        if(doc.select("div[class=tl]").size() == 0){
+            searchResBackInfo.code = -2;//
+            searchResBackInfo.msg = "无结果";
+            return;
+        }else if(doc.select("div[class=tl]").first().select("div[class=slst mtw]").size() == 0){
+            searchResBackInfo.code = -2;//
+            searchResBackInfo.msg = "无结果";
+            return;
+        }
+
+        Element div = doc.select("div[class=tl]").first().select("div[class=slst mtw]").first();
+
+        Elements lis = div.select("ul").first().select("li");
+        if(lis.size() < 20){
+            searchResBackInfo.isLoadAll = true;
+        }else{
+            searchResBackInfo.isLoadAll = false;
+        }
+        for(Element element:lis){
+
+            SearchResItemInfo itemInfo = new SearchResItemInfo();
+
+            Element e_a = element.select("a").first();
+            String href = e_a.attr("href");
+            String title = e_a.text();
+            Elements e_ps = element.select("p");
+            String reads_commnums = e_ps.first().text().replaceAll(" ","").trim();
+            String[] kv = reads_commnums.replaceAll("个评论","").replaceAll("次查看","").split("-");
+            int readtimes = Integer.valueOf(kv[0]);
+            int commnums = Integer.valueOf(kv[1]);
+            String desc = e_ps.get(1).text();
+            Elements e_spans = e_ps.get(2).select("span");
+            String data = e_spans.first().text();
+            String author = e_spans.get(1).select("a").first().text();
+
+            itemInfo.artAuthor = author;
+            itemInfo.artDate = data;
+            itemInfo.artDesc = desc;
+            itemInfo.artReadTimes = readtimes;
+            itemInfo.usrCommNum = commnums;
+            itemInfo.artSrc = href;
+            itemInfo.artTitle = title;
+            searchResBackInfo.list.add(itemInfo);
+        }
+        searchResBackInfo.pageNum++;
 
     }
     /**
@@ -413,6 +510,9 @@ public class DataProvider {
         //
 
         Element tableElement = doc.select("table").get(1);
+        if(tableElement.select("iframe").size() > 0 || tableElement.select("embed").size() > 0){
+            articlelnfo.arcType = "视频";
+        }
 
         if("视频".equals(articlelnfo.arcType)){
             if(tableElement.select("iframe").size() > 0){

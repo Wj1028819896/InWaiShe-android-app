@@ -4,15 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
-
-
-    <com.inwaishe.app.framework.webviewstyleselector.widget.NumSeekBar
-        android:id="@+id/seekbar"
-        android:layout_marginTop="50dp"
+    <WebView
+        android:id="@+id/wv"
         android:layout_width="match_parent"
-        android:layout_height="?actionBarSize"
-        android:max="100"
-        android:progress="60"/>
-
-
+        android:layout_height="match_parent">
+    </WebView>
 </LinearLayout>

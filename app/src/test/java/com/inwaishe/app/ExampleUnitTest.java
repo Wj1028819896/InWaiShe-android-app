@@ -1,5 +1,12 @@
 package com.inwaishe.app;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.provider.Settings;
+import android.test.AndroidTestCase;
+import android.util.Log;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -9,9 +16,6 @@ import static org.junit.Assert.*;
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-public class ExampleUnitTest {
-    @Test
-    public void addition_isCorrect() throws Exception {
-        assertEquals(4, 2 + 2);
-    }
+public class ExampleUnitTest extends AndroidTestCase{
+
 }

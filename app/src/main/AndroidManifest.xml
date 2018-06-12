@@ -61,7 +61,8 @@
         <activity android:name=".base.BaseActivity" />
         <activity android:name=".ui.display.DisplayActivity" />
         <activity android:name=".ui.PhotoCenterActivity" />
-        <activity android:name=".ui.display.ImageShowActivity"></activity>
+        <activity android:name=".ui.display.ImageShowActivity" />
+        <activity android:name=".ui.SearchResultActivity"></activity>
     </application>
 
 </manifest>

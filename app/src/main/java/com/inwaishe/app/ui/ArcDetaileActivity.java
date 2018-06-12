@@ -59,6 +59,8 @@ import com.inwaishe.app.entity.mainpage.Articlelnfo;
 import com.inwaishe.app.entity.video.BiliVideoInfo;
 import com.inwaishe.app.framework.activitytrans.EnterActivityTool;
 import com.inwaishe.app.framework.arch.bus.XBus;
+import com.inwaishe.app.framework.arch.bus.XBusObserver;
+import com.inwaishe.app.framework.arch.bus.XBusThreadModel;
 import com.inwaishe.app.framework.webviewstyleselector.StyleSelectDialogFragment;
 import com.inwaishe.app.http.OkCookieJar;
 import com.inwaishe.app.media.MediaPlayerActivity;
@@ -91,6 +93,7 @@ public class ArcDetaileActivity extends BaseActivity implements EmotionKeyBoardM
 
     private AppBarLayout mAppBarLayout;
     public static String EVENT_FONTSIZE_CHANGE = "EVENT_FONTSIZE_CHANGE";
+    public static String EVENT_PLAYBUTTON_SETVISIBLEORNO = "EVENT_PLAYBUTTON_SETVISIBLEORNO";
     private Toolbar mToolbar;
     private ActionMenuView mActionMenuView;
     private CollapsingToolbarLayout mCollapsingToolbarLayout;
@@ -281,12 +284,25 @@ public class ArcDetaileActivity extends BaseActivity implements EmotionKeyBoardM
 
         slidingTabLayout.setViewPager(mVpContent);
 
+
+        XBus.getInstance().observe(this, EVENT_PLAYBUTTON_SETVISIBLEORNO, new XBusObserver() {
+            @Override
+            public void onCall(Object var) {
+                changePlayButtonVisible();
+            }
+        }).runOn(XBusThreadModel.mainThread());
+    }
+
+    /**
+     * 改变播放按钮是否显示
+     */
+    public void changePlayButtonVisible(){
+        arcType = mArticleInfo.arcType;
         if(arcType.equals("视频")){
             mFbPlay.setVisibility(View.VISIBLE);
         }else{
             mFbPlay.setVisibility(View.GONE);
         }
-
     }
 
     @Override

@@ -8,8 +8,8 @@ android {
         applicationId "com.inwaishe.app"
         minSdkVersion 16
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode 2
+        versionName "1.1"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 //        jackOptions {
@@ -58,67 +58,18 @@ android {
 }
 
 dependencies {
-
     //compile fileTree(include: ['*.jar'], dir: 'libs')
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-
-    //Lifecycles, LiveData,  ViewModel,
-
-    //Room,
-
-    //glide
-
-    //jsoup
-
-    //required, enough for most devices.
-
-    //Other ABIs: optional
-
-    //ExoPlayer as IMediaPlayer: optional, experimental
-
-    //compile 'com.dou361.ijkplayer:jjdxm-ijkplayer:1.0.6'
-
-    //compile files('libs/ezmorph-1.0.3.jar')
-
-    //compile files('libs/json-lib-2.4-jdk15.jar')
     compile files('libs/commons-beanutils-1.8.0.jar')
     compile files('libs/commons-collections-3.1.jar')
     compile files('libs/commons-lang-2.5.jar')
     compile files('libs/commons-logging.jar')
     compile project(path: ':jjdxm-ijkplayer')
-
-    //根据需要支持去拓展，在jjdxm-ijkplayer中默认加入了armv7a的了
-
-    //bmob-sdk：Bmob的android sdk包，包含了Bmob的数据存储、文件等服务，以下是最新的bmob-sdk:
-
-    //implementation 'com.android.support.constraint:constraint-layout:1.0.2'
     compile('com.alibaba.android:vlayout:1.2.6@aar') {
         transitive = true
     }
-
-    //    compile 'tv.danmaku.ijk.media:ijkplayer-armv7a:0.8.2'
-
-    //    compile 'tv.danmaku.ijk.media:ijkplayer-arm64:0.8.2'
-
-    //    compile 'tv.danmaku.ijk.media:ijkplayer-x86_64:0.8.2'
-
-    //    compile 'tv.danmaku.ijk.media:ijkplayer-java:0.8.2'
-
-    //    compile 'tv.danmaku.ijk.media:ijkplayer-armv5:0.8.2'
-
-    //    compile 'tv.danmaku.ijk.media:ijkplayer-x86:0.8.2'
-
-    //compile 'tv.danmaku.ijk.media:ijkplayer-exo:0.8.2'
-
-    //compile 'com.github.ctiao:DanmakuFlameMaster:0.5.6'
-
-    //compile 'cn.bmob.android:bmob-sdk:3.5.5'
-
-    //compile 'cn.bmob.android:http-legacy:1.0'
-
-    //compile 'com.shuyu:GSYVideoPlayer:2.1.1'
     compile 'com.dou361.ijkplayer-armv7a:jjdxm-ijkplayer-armv7a:1.0.0'
     compile 'com.dou361.ijkplayer-armv5:jjdxm-ijkplayer-armv5:1.0.0'
     compile 'com.dou361.ijkplayer-arm64:jjdxm-ijkplayer-arm64:1.0.0'
@@ -150,10 +101,9 @@ dependencies {
     compile 'com.facebook.react:react-native:0.49.+'
     compile 'com.tencent.mm.opensdk:wechat-sdk-android-without-mta:+'
     compile 'com.github.chrisbanes:PhotoView:1.2.6'
+    compile 'com.tencent.bugly:crashreport:latest.release'
     testCompile 'junit:junit:4.12'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.1.1'
     annotationProcessor 'android.arch.lifecycle:compiler:1.0.0-alpha1'
     annotationProcessor 'android.arch.persistence.room:compiler:1.0.0-alpha1'
-    debugCompile 'com.squareup.leakcanary:leakcanary-android:1.5.4'
-    releaseCompile 'com.squareup.leakcanary:leakcanary-android-no-op:1.5.4'
 }

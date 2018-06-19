@@ -34,6 +34,7 @@ import com.inwaishe.app.ui.AboutUsActivity;
 import com.inwaishe.app.ui.LoginActivity;
 import com.inwaishe.app.ui.MyApplication;
 import com.inwaishe.app.widget.SettingItemTag;
+import com.tencent.bugly.crashreport.CrashReport;
 
 import static com.inwaishe.app.common.CommonData.REQUESTCODE_LOGIN;
 

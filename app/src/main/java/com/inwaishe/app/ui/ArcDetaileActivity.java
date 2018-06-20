@@ -118,6 +118,8 @@ public class ArcDetaileActivity extends BaseActivity implements EmotionKeyBoardM
     private PlayerView player;
     private Context mContext;
     private PowerManager.WakeLock wakeLock;
+    private Thread vedioTask;
+    private boolean vedioTaskISRunning = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -433,6 +435,9 @@ public class ArcDetaileActivity extends BaseActivity implements EmotionKeyBoardM
                         charSequences = new CharSequence[]{"Bili站(推荐)","优酷"};
                         values = new int[]{MediaPlayerActivity.TYPE_IJKPLAYER,MediaPlayerActivity.TYPE_YOUKU_WEBVIEW};
                     }else{
+                        if(player != null){
+                            return;
+                        }
                         playVideoByBili(arcDetailViewModel.getArticlelnfoMutableLiveData().getValue().avid);
                         return;
                     }
@@ -507,108 +512,114 @@ public class ArcDetaileActivity extends BaseActivity implements EmotionKeyBoardM
         params.setBehavior(new AppBarLayoutOverScrollViewBehavior(false));
 
         mAppBarLayout.setExpanded(true,true);
-        final Thread task = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    final BiliVideoInfo biliVideoInfo = BiliVedioDataProvider.getFirstVideo(avid);
-                    runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            rootView.findViewById(R.id.app_video_box).setVisibility(View.VISIBLE);
-                            player = new PlayerView(ArcDetaileActivity.this,rootView){
+        if(vedioTask == null){
+            vedioTask = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        vedioTaskISRunning = true;
+                        final BiliVideoInfo biliVideoInfo = BiliVedioDataProvider.getFirstVideo(avid);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                rootView.findViewById(R.id.app_video_box).setVisibility(View.VISIBLE);
+                                player = new PlayerView(ArcDetaileActivity.this,rootView){
 
-                                @Override
-                                public PlayerView startPlay() {
-                                    //播放画面不可滑出屏幕
-                                    layoutParams.setScrollFlags(0);
-                                    //AppBarLayout behavior 不拦截事件，防止声音亮度手势被拦截
-                                    params.setBehavior(new AppBarLayoutOverScrollViewBehavior(false));
-                                    return super.startPlay();
-                                }
-
-                                @Override
-                                public PlayerView pausePlay() {
-                                    layoutParams.setScrollFlags(SCROLL_FLAG_SCROLL|SCROLL_FLAG_EXIT_UNTIL_COLLAPSED);
-                                    params.setBehavior(new AppBarLayoutOverScrollViewBehavior(true));
-                                    return super.pausePlay();
-                                }
-
-                                @Override
-                                public PlayerView stopPlay() {
-                                    layoutParams.setScrollFlags(SCROLL_FLAG_SCROLL|SCROLL_FLAG_EXIT_UNTIL_COLLAPSED);
-                                    params.setBehavior(new AppBarLayoutOverScrollViewBehavior(true));
-                                    return super.stopPlay();
-                                }
-                                @Override
-                                public PlayerView onConfigurationChanged(Configuration newConfig) {
-                                    if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-                                        //隐藏干扰控件 显示topBar
-                                        hideHideTopBar(false);
-                                        mFbPlay.setVisibility(View.GONE);
-                                        rootView.findViewById(R.id.comment_bar).setVisibility(View.GONE);
-                                    } else {
-                                        hideHideTopBar(true);
-                                        mFbPlay.setVisibility(View.VISIBLE);
-                                        rootView.findViewById(R.id.comment_bar).setVisibility(View.VISIBLE);
+                                    @Override
+                                    public PlayerView startPlay() {
+                                        //播放画面不可滑出屏幕
+                                        layoutParams.setScrollFlags(0);
+                                        //AppBarLayout behavior 不拦截事件，防止声音亮度手势被拦截
+                                        params.setBehavior(new AppBarLayoutOverScrollViewBehavior(false));
+                                        return super.startPlay();
                                     }
-                                    return super.onConfigurationChanged(newConfig);
-                                }
 
-                                @Override
-                                public PlayerView operatorPanl() {
-                                    if(getBottonBarView().getVisibility() != View.VISIBLE){
-                                        mToolbar.setVisibility(View.VISIBLE);
-                                    }else{
-                                        mToolbar.setVisibility(View.GONE);
+                                    @Override
+                                    public PlayerView pausePlay() {
+                                        layoutParams.setScrollFlags(SCROLL_FLAG_SCROLL|SCROLL_FLAG_EXIT_UNTIL_COLLAPSED);
+                                        params.setBehavior(new AppBarLayoutOverScrollViewBehavior(true));
+                                        return super.pausePlay();
                                     }
-                                    if(getTopBarView().getVisibility() == View.VISIBLE){
-                                        mToolbar.setVisibility(View.GONE);
+
+                                    @Override
+                                    public PlayerView stopPlay() {
+                                        layoutParams.setScrollFlags(SCROLL_FLAG_SCROLL|SCROLL_FLAG_EXIT_UNTIL_COLLAPSED);
+                                        params.setBehavior(new AppBarLayoutOverScrollViewBehavior(true));
+                                        return super.stopPlay();
                                     }
-                                    return super.operatorPanl();
-                                }
-
-                                @Override
-                                public PlayerView toggleProcessDurationOrientation() {
-                                    hideSteam(getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                                    return setProcessDurationOrientation(getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT ? PlayStateParams.PROCESS_PORTRAIT : PlayStateParams.PROCESS_LANDSCAPE);
-                                }
-
-                                @Override
-                                public PlayerView setPlaySource(List<VideoijkBean> list) {
-                                    return super.setPlaySource(list);
-                                }
-                            }
-                                    .setTitle("" + biliVideoInfo.title)
-                                    .setScaleType(PlayStateParams.fitparent)
-                                    .setProcessDurationOrientation(PlayStateParams.PROCESS_PORTRAIT)
-                                    .forbidTouch(false)
-                                    .hideSteam(true)
-                                    .setUseAndroidMediaplayer(true)
-                                    .hideCenterPlayer(false)
-                                    .hideHideTopBar(true)
-                                    .showThumbnail(new OnShowThumbnailListener() {
-                                        @Override
-                                        public void onShowThumbnail(ImageView ivThumbnail) {
-                                            GlideUtils.disPlayUrl(mContext,mArticleInfo.artImageUrl,ivThumbnail);
+                                    @Override
+                                    public PlayerView onConfigurationChanged(Configuration newConfig) {
+                                        if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+                                            //隐藏干扰控件 显示topBar
+                                            hideHideTopBar(false);
+                                            mFbPlay.setVisibility(View.GONE);
+                                            rootView.findViewById(R.id.comment_bar).setVisibility(View.GONE);
+                                        } else {
+                                            hideHideTopBar(true);
+                                            mFbPlay.setVisibility(View.VISIBLE);
+                                            rootView.findViewById(R.id.comment_bar).setVisibility(View.VISIBLE);
                                         }
-                                    })
-                                    .setPlaySource(biliVideoInfo.url).startPlay();
-                                    player.setBrightness(50);
-                        }
-                    });
-                } catch (Exception e) {
-                    e.printStackTrace();
+                                        return super.onConfigurationChanged(newConfig);
+                                    }
+
+                                    @Override
+                                    public PlayerView operatorPanl() {
+                                        if(getBottonBarView().getVisibility() != View.VISIBLE){
+                                            mToolbar.setVisibility(View.VISIBLE);
+                                        }else{
+                                            mToolbar.setVisibility(View.GONE);
+                                        }
+                                        if(getTopBarView().getVisibility() == View.VISIBLE){
+                                            mToolbar.setVisibility(View.GONE);
+                                        }
+                                        return super.operatorPanl();
+                                    }
+
+                                    @Override
+                                    public PlayerView toggleProcessDurationOrientation() {
+                                        hideSteam(getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+                                        return setProcessDurationOrientation(getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT ? PlayStateParams.PROCESS_PORTRAIT : PlayStateParams.PROCESS_LANDSCAPE);
+                                    }
+
+                                    @Override
+                                    public PlayerView setPlaySource(List<VideoijkBean> list) {
+                                        return super.setPlaySource(list);
+                                    }
+                                }
+                                        .setTitle("" + biliVideoInfo.title)
+                                        .setScaleType(PlayStateParams.fitparent)
+                                        .setProcessDurationOrientation(PlayStateParams.PROCESS_PORTRAIT)
+                                        .forbidTouch(false)
+                                        .hideSteam(true)
+                                        .setUseAndroidMediaplayer(true)
+                                        .hideCenterPlayer(false)
+                                        .hideHideTopBar(true)
+                                        .showThumbnail(new OnShowThumbnailListener() {
+                                            @Override
+                                            public void onShowThumbnail(ImageView ivThumbnail) {
+                                                GlideUtils.disPlayUrl(mContext,mArticleInfo.artImageUrl,ivThumbnail);
+                                            }
+                                        })
+                                        .setPlaySource(biliVideoInfo.url).startPlay();
+                                player.setBrightness(50);
+                            }
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        });
+            });
+        }
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP){
             rootView.findViewById(R.id.ripperView).setVisibility(View.VISIBLE);
             final RipperSeziView ripperSeziView = ((RipperSeziView)rootView.findViewById(R.id.ripperView));
             ripperSeziView.setAnimatorListener(new RipperSeziView.RAnimatorListener() {
                 @Override
                 public void onAnimationEnd() {
-                    task.start();
+                    if(!vedioTaskISRunning){
+                        vedioTask.start();
+                    }
                     ripperSeziView.setVisibility(View.GONE);
                 }
                 @Override
@@ -637,7 +648,7 @@ public class ArcDetaileActivity extends BaseActivity implements EmotionKeyBoardM
                     .go(new CircularAnim.OnAnimationEndListener() {
                         @Override
                         public void onAnimationEnd() {
-                            task.start();
+                            vedioTask.start();
                         }
                     });
         }

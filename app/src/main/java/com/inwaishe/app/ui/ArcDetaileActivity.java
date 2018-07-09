@@ -600,6 +600,7 @@ public class ArcDetaileActivity extends BaseActivity implements EmotionKeyBoardM
                                                 GlideUtils.disPlayUrl(mContext,mArticleInfo.artImageUrl,ivThumbnail);
                                             }
                                         })
+                                        .setbiliDanmakuSource(biliVideoInfo.cid)
                                         .setPlaySource(biliVideoInfo.url).startPlay();
                                 player.setBrightness(50);
                             }

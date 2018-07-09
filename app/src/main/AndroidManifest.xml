@@ -47,6 +47,7 @@
 
         <activity
             android:name=".ui.ArcDetaileActivity"
+            android:hardwareAccelerated="true"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:screenOrientation="portrait" />
         <activity android:name=".ui.test.TestActivity" />

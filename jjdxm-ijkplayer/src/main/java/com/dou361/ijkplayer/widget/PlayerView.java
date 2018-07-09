@@ -21,6 +21,8 @@ import android.view.Surface;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -84,6 +86,10 @@ public class PlayerView {
      */
     private final IjkVideoView videoView;
     /**
+     * 原生danmuView
+     */
+    private final IjkDanmakuView danmakuView;
+    /**
      * 播放器整个界面
      */
     private final View rl_box;
@@ -123,10 +129,63 @@ public class PlayerView {
      * 视频全屏按钮
      */
     private final ImageView iv_fullscreen;
+
+    /**
+     *打开弹幕设置按钮
+     * **/
+    private final ImageView iv_danmakumenu;
+    /**
+     * 弹幕显示隐藏checkbox
+     */
+    private final CheckBox cb_danmakuhideorshow;
+
+    private final TextView tv_DanmakuAlpha;
+    private final TextView tv_DanmakuTxtSize;
+    private final TextView tv_DanmakuSpeed;
+    private final TextView tv_DanmakuStroken;
     /**
      * 菜单面板
      */
     private final View settingsContainer;
+
+    /***
+     *弹幕菜单面板
+     */
+    private final View danmakuSettingContainer;
+    /**
+     * 透明度面板
+     */
+    private final View danmakualphaControllerContainer;
+    /**
+     * 弹幕速度面板
+     */
+    private final View danmakuspeedControllerContainer;
+    /**
+     * 弹幕字号面板
+     */
+    private final View danmakutxtsizeControllerContainer;
+    /**
+     * 弹幕描边面板
+     */
+    private final View danmakustrokenControllerContainer;
+
+    /**
+     * 弹幕透明度控制
+     */
+    private final SeekBar danmakualphaController;
+    /**
+     * 弹幕速度控制
+     */
+    private final SeekBar danmakuspeedController;
+    /**
+     * 弹幕字号控制
+     */
+    private final SeekBar danmakutxtsizeController;
+    /**
+     * 弹幕描边控制
+     */
+    private final SeekBar danmakustrokenController;
+
     /**
      * 声音面板
      */
@@ -341,6 +400,7 @@ public class PlayerView {
                 case MESSAGE_SEEK_NEW_POSITION:
                     if (!isLive && newPosition >= 0) {
                         videoView.seekTo((int) newPosition);
+                        danmakuView.seekTo(newPosition);
                         newPosition = -1;
                     }
                     break;
@@ -389,7 +449,21 @@ public class PlayerView {
      * 视频播放时信息回调
      */
     private IMediaPlayer.OnInfoListener onInfoListener;
-
+    /**
+     * checkbox监听
+     */
+    private final CheckBox.OnCheckedChangeListener mDanmakuCheckListener = new CheckBox.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if(danmakuView != null){
+                if(isChecked){
+                    danmakuView.showDanmaku();
+                }else{
+                    danmakuView.hideDanmaku();
+                }
+            }
+        }
+    };
     /**
      * 点击事件监听
      */
@@ -399,7 +473,11 @@ public class PlayerView {
             if (v.getId() == R.id.app_video_menu) {
                 /**菜单*/
                 showMenu();
-            } else if (v.getId() == R.id.app_video_stream) {
+            } else if(v.getId() == R.id.app_danmaku_openmenu){
+                /**打开弹幕设置菜单**/
+                showDanmakuSettingMenu();
+            }
+            else if (v.getId() == R.id.app_video_stream) {
                 /**选择分辨率*/
                 showStreamSelectView();
             } else if (v.getId() == R.id.ijk_iv_rotation) {
@@ -486,11 +564,59 @@ public class PlayerView {
         public void onStopTrackingTouch(SeekBar seekBar) {
             long duration = getDuration();
             videoView.seekTo((int) ((duration * seekBar.getProgress() * 1.0) / 1000));
+            danmakuView.seekTo((int) ((duration * seekBar.getProgress() * 1.0) / 1000));
             mHandler.removeMessages(MESSAGE_SHOW_PROGRESS);
             isDragging = false;
             mHandler.sendEmptyMessageDelayed(MESSAGE_SHOW_PROGRESS, 1000);
         }
     };
+
+    /**
+     * 弹幕设置秒模板中seekbar 进度监听内部类
+     */
+    private final  static  class DanmakuSeekBarListener implements SeekBar.OnSeekBarChangeListener{
+        public static final int TYPE_ALPHA = 0;
+        public static final int TYPE_SPEED = 1;
+        public static final int TYPE_TXTSIZE = 2;
+        public static final int TYPE_STROKEN = 3;
+        private int type = 0;
+        PlayerView playerView;
+
+        public DanmakuSeekBarListener(PlayerView playerView,int type){
+            this.playerView = playerView;
+            this.type = type;
+        }
+        @Override
+        public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+           if(type == TYPE_ALPHA){
+               float aplha = 1.0f * ((float) progress/100.0f);
+               playerView.danmakuView.setDanmakuAplha(aplha);
+               playerView.tv_DanmakuAlpha.setText( progress + "%");
+           }else if(type == TYPE_SPEED){
+               float speed = 0.3f + 1.7f * ((float) progress/100.0f);
+               playerView.danmakuView.setDanmakuSpeed(2.3f - speed);
+               playerView.tv_DanmakuSpeed.setText("" + speed);
+           }else if(type == TYPE_TXTSIZE){
+               float size = 2.0f * ((float) progress/100.0f);
+               playerView.danmakuView.setDanmakuSize(size);
+               playerView.tv_DanmakuTxtSize.setText(""+size);
+           }else if(type == TYPE_STROKEN){
+               float stroken = 2.5f * ((float) progress/100.0f);
+               playerView.danmakuView.setDanmakuStroken(stroken);
+               playerView.tv_DanmakuStroken.setText(""+stroken);
+           }
+        }
+
+        @Override
+        public void onStartTrackingTouch(SeekBar seekBar) {
+
+        }
+
+        @Override
+        public void onStopTrackingTouch(SeekBar seekBar) {
+
+        }
+    }
 
     /**
      * 亮度进度条滑动监听
@@ -596,6 +722,9 @@ public class PlayerView {
             query = new LayoutQuery(mActivity);
             rl_box = mActivity.findViewById(R.id.app_video_box);
             videoView = (IjkVideoView) mActivity.findViewById(R.id.video_view);
+
+            danmakuView = (IjkDanmakuView) mActivity.findViewById(R.id.danmaku_view);
+
             settingsContainer = mActivity.findViewById(R.id.simple_player_settings_container);
             settingsContainer.setVisibility(View.GONE);
             volumeControllerContainer = mActivity.findViewById(R.id.simple_player_volume_controller_container);
@@ -607,10 +736,38 @@ public class PlayerView {
             brightnessControllerContainer = mActivity.findViewById(R.id.simple_player_brightness_controller_container);
             brightnessController = (SeekBar) mActivity.findViewById(R.id.simple_player_brightness_controller);
             brightnessController.setMax(100);
+
+            danmakuSettingContainer = mActivity.findViewById(R.id.simple_player_danmaku_controller);
+            danmakuSettingContainer.setVisibility(View.GONE);
+            /**透明度*/
+            danmakualphaControllerContainer = mActivity.findViewById(R.id.simple_player_danmaku_alpha_controller_container);
+            danmakualphaController = (SeekBar) mActivity.findViewById(R.id.simple_player_danmaku_alpha_controller);
+            danmakualphaController.setMax(100);
+            /**弹幕速度*/
+            danmakuspeedControllerContainer = mActivity.findViewById(R.id.simple_player_danmaku_speed_controller_container);
+            danmakuspeedController = (SeekBar) mActivity.findViewById(R.id.simple_player_danmaku_speed_controller);
+            danmakuspeedController.setMax(100);
+            /**弹幕字号*/
+            danmakutxtsizeControllerContainer = mActivity.findViewById(R.id.simple_player_danmaku_txtsize_controller_container);
+            danmakutxtsizeController = (SeekBar) mActivity.findViewById(R.id.simple_player_danmaku_txtsize_controller);
+            danmakutxtsizeController.setMax(100);
+            /**弹幕描边*/
+            danmakustrokenControllerContainer = mActivity.findViewById(R.id.simple_player_danmaku_stroken_controller_container);
+            danmakustrokenController = (SeekBar) mActivity.findViewById(R.id.simple_player_danmaku_stroken_controller);
+            danmakustrokenController.setMax(100);
+
+            tv_DanmakuAlpha = (TextView) mActivity.findViewById(R.id.simple_player_danmaku_alpha_value);
+            tv_DanmakuSpeed = (TextView) mActivity.findViewById(R.id.simple_player_danmaku_speed_value);
+            tv_DanmakuTxtSize = (TextView) mActivity.findViewById(R.id.simple_player_danmaku_txtsize_value);
+            tv_DanmakuStroken = (TextView) mActivity.findViewById(R.id.simple_player_danmaku_stroken_value);
+
         } else {
             query = new LayoutQuery(mActivity, rootView);
             rl_box = rootView.findViewById(R.id.app_video_box);
             videoView = (IjkVideoView) rootView.findViewById(R.id.video_view);
+
+            danmakuView = (IjkDanmakuView) rootView.findViewById(R.id.danmaku_view);
+
             settingsContainer = rootView.findViewById(R.id.simple_player_settings_container);
             settingsContainer.setVisibility(View.GONE);
             volumeControllerContainer = rootView.findViewById(R.id.simple_player_volume_controller_container);
@@ -622,6 +779,30 @@ public class PlayerView {
             brightnessControllerContainer = rootView.findViewById(R.id.simple_player_brightness_controller_container);
             brightnessController = (SeekBar) rootView.findViewById(R.id.simple_player_brightness_controller);
             brightnessController.setMax(100);
+
+            danmakuSettingContainer = rootView.findViewById(R.id.simple_player_danmaku_controller);
+            danmakuSettingContainer.setVisibility(View.GONE);
+            /**透明度*/
+            danmakualphaControllerContainer = rootView.findViewById(R.id.simple_player_danmaku_alpha_controller_container);
+            danmakualphaController = (SeekBar) rootView.findViewById(R.id.simple_player_danmaku_alpha_controller);
+            danmakualphaController.setMax(100);
+            /**弹幕速度*/
+            danmakuspeedControllerContainer = rootView.findViewById(R.id.simple_player_danmaku_speed_controller_container);
+            danmakuspeedController = (SeekBar) rootView.findViewById(R.id.simple_player_danmaku_speed_controller);
+            danmakuspeedController.setMax(100);
+            /**弹幕字号*/
+            danmakutxtsizeControllerContainer = rootView.findViewById(R.id.simple_player_danmaku_txtsize_controller_container);
+            danmakutxtsizeController = (SeekBar) rootView.findViewById(R.id.simple_player_danmaku_txtsize_controller);
+            danmakutxtsizeController.setMax(100);
+            /**弹幕描边*/
+            danmakustrokenControllerContainer = rootView.findViewById(R.id.simple_player_danmaku_stroken_controller_container);
+            danmakustrokenController = (SeekBar) rootView.findViewById(R.id.simple_player_danmaku_stroken_controller);
+            danmakustrokenController.setMax(100);
+
+            tv_DanmakuAlpha = (TextView) rootView.findViewById(R.id.simple_player_danmaku_alpha_value);
+            tv_DanmakuSpeed = (TextView) rootView.findViewById(R.id.simple_player_danmaku_speed_value);
+            tv_DanmakuTxtSize = (TextView) rootView.findViewById(R.id.simple_player_danmaku_txtsize_value);
+            tv_DanmakuStroken = (TextView) rootView.findViewById(R.id.simple_player_danmaku_stroken_value);
         }
 
         try {
@@ -634,6 +815,12 @@ public class PlayerView {
             var7.printStackTrace();
         }
         brightnessController.setOnSeekBarChangeListener(this.onBrightnessControllerChangeListener);
+        /*弹幕设置seekbar监听*/
+        danmakualphaController.setOnSeekBarChangeListener(new DanmakuSeekBarListener(this,DanmakuSeekBarListener.TYPE_ALPHA));
+        danmakuspeedController.setOnSeekBarChangeListener(new DanmakuSeekBarListener(this,DanmakuSeekBarListener.TYPE_SPEED));
+        danmakutxtsizeController.setOnSeekBarChangeListener(new DanmakuSeekBarListener(this,DanmakuSeekBarListener.TYPE_TXTSIZE));
+        danmakustrokenController.setOnSeekBarChangeListener(new DanmakuSeekBarListener(this,DanmakuSeekBarListener.TYPE_STROKEN));
+
         if (rootView == null) {
             streamSelectView = (LinearLayout) mActivity.findViewById(R.id.simple_player_select_stream_container);
             streamSelectListView = (ListView) mActivity.findViewById(R.id.simple_player_select_streams_list);
@@ -646,6 +833,10 @@ public class PlayerView {
             iv_player = (ImageView) mActivity.findViewById(R.id.play_icon);
             iv_rotation = (ImageView) mActivity.findViewById(R.id.ijk_iv_rotation);
             iv_fullscreen = (ImageView) mActivity.findViewById(R.id.app_video_fullscreen);
+
+            iv_danmakumenu = (ImageView) mActivity.findViewById(R.id.app_danmaku_openmenu);
+            cb_danmakuhideorshow  = (CheckBox) mActivity.findViewById(R.id.app_danmaku_hideorshow);
+
             tv_steam = (TextView) mActivity.findViewById(R.id.app_video_stream);
             tv_speed = (TextView) mActivity.findViewById(R.id.app_video_speed);
             seekBar = (SeekBar) mActivity.findViewById(R.id.app_video_seekBar);
@@ -662,6 +853,10 @@ public class PlayerView {
             iv_rotation = (ImageView) rootView.findViewById(R.id.ijk_iv_rotation);
             iv_fullscreen = (ImageView) rootView.findViewById(R.id.app_video_fullscreen);
             tv_steam = (TextView) rootView.findViewById(R.id.app_video_stream);
+
+            iv_danmakumenu = (ImageView) rootView.findViewById(R.id.app_danmaku_openmenu);
+            cb_danmakuhideorshow  = (CheckBox) rootView.findViewById(R.id.app_danmaku_hideorshow);
+
             tv_speed = (TextView) rootView.findViewById(R.id.app_video_speed);
             seekBar = (SeekBar) rootView.findViewById(R.id.app_video_seekBar);
         }
@@ -671,6 +866,10 @@ public class PlayerView {
         iv_bar_player.setOnClickListener(onClickListener);
         iv_player.setOnClickListener(onClickListener);
         iv_fullscreen.setOnClickListener(onClickListener);
+
+        iv_danmakumenu.setOnClickListener(onClickListener);
+        cb_danmakuhideorshow.setOnCheckedChangeListener(mDanmakuCheckListener);
+
         iv_rotation.setOnClickListener(onClickListener);
         tv_steam.setOnClickListener(onClickListener);
         iv_back.setOnClickListener(onClickListener);
@@ -772,6 +971,8 @@ public class PlayerView {
         } else {
             query.id(R.id.ll_bg).visible();
         }
+
+        updateFullScreenButton();
     }
 
     /**==========================================Activity生命周期方法回调=============================*/
@@ -802,8 +1003,10 @@ public class PlayerView {
         videoView.onResume();
         if (isLive) {
             videoView.seekTo(0);
+            danmakuView.seekTo(0);
         } else {
             videoView.seekTo(currentPosition);
+            danmakuView.seekTo(currentPosition);
         }
         if (bgState == 0) {
 
@@ -988,6 +1191,11 @@ public class PlayerView {
         return this;
     }
 
+    public PlayerView setbiliDanmakuSource(String url){
+        danmakuView.setBilibiliDanmukuDataSource(url);
+        return this;
+    }
+
     /**
      * 设置播放地址
      * 单个视频地址时
@@ -1013,12 +1221,14 @@ public class PlayerView {
         if (isLive) {
             videoView.setVideoPath(currentUrl);
             videoView.seekTo(0);
+            danmakuView.seekTo(0);
         } else {
             if (isHasSwitchStream || status == PlayStateParams.STATE_ERROR) {
                 //换源之后声音可播，画面卡住，主要是渲染问题，目前只是提供了软解方式，后期提供设置方式
-                videoView.setRender(videoView.RENDER_TEXTURE_VIEW);
+                //videoView.setRender(videoView.RENDER_TEXTURE_VIEW);
                 videoView.setVideoPath(currentUrl);
                 videoView.seekTo(currentPosition);
+                danmakuView.seekTo(currentPosition);
                 isHasSwitchStream = false;
             }
         }
@@ -1033,6 +1243,7 @@ public class PlayerView {
                 if (playerSupport) {
                     query.id(R.id.app_video_loading).visible();
                     videoView.start();
+                    danmakuView.start();
                 } else {
                     showStatus(mActivity.getResources().getString(R.string.not_support));
                 }
@@ -1085,6 +1296,7 @@ public class PlayerView {
         status = PlayStateParams.STATE_PAUSED;
         getCurrentPosition();
         videoView.pause();
+        danmakuView.pause();
         return this;
     }
 
@@ -1105,6 +1317,7 @@ public class PlayerView {
      */
     public PlayerView seekTo(int playtime) {
         videoView.seekTo(playtime);
+        danmakuView.seekTo(playtime);
         return this;
     }
 
@@ -1364,6 +1577,7 @@ public class PlayerView {
         isShowControlPanl = !isShowControlPanl;
         query.id(R.id.simple_player_settings_container).gone();
         query.id(R.id.simple_player_select_stream_container).gone();
+        query.id(R.id.simple_player_danmaku_controller).gone();
         if (isShowControlPanl) {
             ll_topbar.setVisibility(isHideTopBar ? View.GONE : View.VISIBLE);
             ll_bottombar.setVisibility(isHideBottonBar ? View.GONE : View.VISIBLE);
@@ -1438,6 +1652,29 @@ public class PlayerView {
             mActivity.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
         updateFullScreenButton();
+        return this;
+    }
+
+    /**
+     * 显示弹幕菜单设置
+     * @return
+     */
+    public PlayerView showDanmakuSettingMenu(){
+        danmakutxtsizeController.setProgress((int) (100 * (danmakuView.getDanmakuScaleTextSize()/2.0f)));
+        danmakualphaController.setProgress((int) (100 * (danmakuView.getDanmakuAplha()/1.0f)));
+        danmakuspeedController.setProgress((int) (100 - 100 * ((danmakuView.getDanmakuSpeed() - 0.3f)/1.7f)));
+        danmakustrokenController.setProgress((int) (100 * (danmakuView.getDanmakuStroken()/2.5f)));
+
+        tv_DanmakuAlpha.setText("" + (int) (100 * (danmakuView.getDanmakuAplha()/1.0f)) + "%");
+        tv_DanmakuSpeed.setText("" + (2.3f - danmakuView.getDanmakuSpeed()));
+        tv_DanmakuTxtSize.setText("" + danmakuView.getDanmakuScaleTextSize());
+        tv_DanmakuStroken.setText("" + danmakuView.getDanmakuStroken());
+
+        danmakuSettingContainer.setVisibility(View.VISIBLE);
+        if (!isForbidHideControlPanl) {
+            ll_topbar.setVisibility(View.GONE);
+            ll_bottombar.setVisibility(View.GONE);
+        }
         return this;
     }
 
@@ -1738,6 +1975,7 @@ public class PlayerView {
         iv_player.setVisibility(View.GONE);
         query.id(R.id.simple_player_settings_container).gone();
         query.id(R.id.simple_player_select_stream_container).gone();
+        query.id(R.id.simple_player_danmaku_controller).gone();
         query.id(R.id.app_video_replay).gone();
         query.id(R.id.app_video_netTie).gone();
         query.id(R.id.app_video_freeTie).gone();
@@ -1881,8 +2119,10 @@ public class PlayerView {
     private void updateFullScreenButton() {
         if (getScreenOrientation() == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
             iv_fullscreen.setImageResource(R.drawable.simple_player_icon_fullscreen_shrink);
+            iv_danmakumenu.setVisibility(View.VISIBLE);
         } else {
             iv_fullscreen.setImageResource(R.drawable.simple_player_icon_fullscreen_stretch);
+            iv_danmakumenu.setVisibility(View.GONE);
         }
     }
 

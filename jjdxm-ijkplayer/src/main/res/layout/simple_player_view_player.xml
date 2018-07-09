@@ -11,7 +11,11 @@
         android:id="@+id/video_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
-
+    <com.dou361.ijkplayer.widget.IjkDanmakuView
+        android:id="@+id/danmaku_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    </com.dou361.ijkplayer.widget.IjkDanmakuView>
     <LinearLayout
         android:id="@+id/ll_bg"
         android:layout_width="match_parent"
@@ -236,6 +240,159 @@
             android:id="@+id/simple_player_select_streams_list"
             android:layout_width="150dp"
             android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <!--弹幕设置菜单-->
+    <LinearLayout
+        android:id="@+id/simple_player_danmaku_controller"
+        android:layout_width="300dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_alignParentRight="true"
+        android:background="#80000000"
+        android:gravity="center_vertical"
+        android:padding="8dp"
+        android:visibility="visible">
+
+        <LinearLayout
+            android:id="@+id/simple_player_danmaku_alpha_controller_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="透明程度"
+                android:gravity="center"
+                android:textSize="12sp"
+                android:textColor="@android:color/white"/>
+            <SeekBar
+                android:id="@+id/simple_player_danmaku_alpha_controller"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/simple_player_danmaku_alpha_value"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="100%"
+                android:gravity="center"
+                android:textSize="12sp"
+                android:textColor="@android:color/white"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/simple_player_danmaku_speed_controller_container"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="弹幕速度"
+                android:gravity="center"
+                android:textSize="12sp"
+                android:textColor="@android:color/white"/>
+            <SeekBar
+                android:id="@+id/simple_player_danmaku_speed_controller"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/simple_player_danmaku_speed_value"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="0.30"
+                android:gravity="center"
+                android:textSize="12sp"
+                android:textColor="@android:color/white"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/simple_player_danmaku_txtsize_controller_container"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="弹幕字号"
+                android:gravity="center"
+                android:textSize="12sp"
+                android:textColor="@android:color/white"/>
+            <SeekBar
+                android:id="@+id/simple_player_danmaku_txtsize_controller"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/simple_player_danmaku_txtsize_value"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="0.50"
+                android:gravity="center"
+                android:textSize="12sp"
+                android:textColor="@android:color/white"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/simple_player_danmaku_stroken_controller_container"
+            android:layout_marginTop="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="描边宽度"
+                android:gravity="center"
+                android:textSize="12sp"
+                android:textColor="@android:color/white"/>
+            <SeekBar
+                android:id="@+id/simple_player_danmaku_stroken_controller"
+                android:layout_marginLeft="4dp"
+                android:layout_marginRight="4dp"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"/>
+            <TextView
+                android:id="@+id/simple_player_danmaku_stroken_value"
+                android:layout_width="40dp"
+                android:layout_height="wrap_content"
+                android:maxLines="1"
+                android:text="0.50"
+                android:gravity="center"
+                android:textSize="12sp"
+                android:textColor="@android:color/white"/>
+        </LinearLayout>
+
+
     </LinearLayout>
 
 

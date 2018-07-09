@@ -139,7 +139,24 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:padding="8dp"
+        android:visibility="gone"
         android:src="@drawable/simple_player_iv_rotation"/>
+
+    <CheckBox
+        android:id="@+id/app_danmaku_hideorshow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:button="@null"
+        android:layout_margin="8dp"
+        android:checked="true"
+        android:background="@drawable/checkboxdanmaku_selector"/>
+    
+    <ImageView
+        android:id="@+id/app_danmaku_openmenu"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:src="@drawable/ic_danmaku_set"/>
 
     <ImageView
         android:id="@+id/app_video_fullscreen"

@@ -196,6 +196,7 @@ public class ArcDetaileActivity extends BaseActivity implements EmotionKeyBoardM
                                 .setInterpolator(new AccelerateInterpolator())
                                 .scaleX(1.0F)
                                 .scaleY(1.0F);
+                        mFbPlay.setEnabled(true);
                         break;
                     case HIDESCRIM:
                         mFbPlay.animate()
@@ -203,6 +204,7 @@ public class ArcDetaileActivity extends BaseActivity implements EmotionKeyBoardM
                                 .setInterpolator(new AccelerateInterpolator())
                                 .scaleX(0.0F)
                                 .scaleY(0.0F);
+                        mFbPlay.setEnabled(false);
                         break;
                 }
             }

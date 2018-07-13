@@ -16,6 +16,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.inwaishe.app.R;
 import com.inwaishe.app.common.GlideUtils;
@@ -247,6 +248,7 @@ public class MainPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                 break;
             case VIEWTYPE_ENTRANCE:
                 EntranceViewHolder entranceViewHolder = (EntranceViewHolder) holder;
+                //图片中心
                 entranceViewHolder.llPhotoCenter.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -254,7 +256,27 @@ public class MainPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
                         mContext.startActivity(it);
                     }
                 });
-
+                //闲置交易
+                entranceViewHolder.llExcharge.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(mContext,"模块建设中...",Toast.LENGTH_LONG).show();
+                    }
+                });
+                //大字报
+                entranceViewHolder.llNewsPager.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(mContext,"模块建设中...",Toast.LENGTH_LONG).show();
+                    }
+                });
+                //更多
+                entranceViewHolder.llMore.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Toast.makeText(mContext,"模块建设中...",Toast.LENGTH_LONG).show();
+                    }
+                });
                 break;
             case VIEWTYPE_LIST:
                 final ListViewHolder listViewHolder = (ListViewHolder)holder;
@@ -395,9 +417,15 @@ public class MainPagerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHold
     private class EntranceViewHolder extends RecyclerView.ViewHolder{
 
         private LinearLayout llPhotoCenter;
+        private LinearLayout llExcharge;
+        private LinearLayout llNewsPager;
+        private LinearLayout llMore;
         public EntranceViewHolder(View itemView) {
             super(itemView);
             llPhotoCenter = (LinearLayout) itemView.findViewById(R.id.llPhotoCenter);
+            llExcharge = (LinearLayout) itemView.findViewById(R.id.llExcharge);
+            llNewsPager = (LinearLayout) itemView.findViewById(R.id.llNewsPager);
+            llMore = (LinearLayout) itemView.findViewById(R.id.llMore);
         }
     }
 

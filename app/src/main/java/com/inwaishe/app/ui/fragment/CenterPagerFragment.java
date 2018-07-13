@@ -33,6 +33,7 @@ import com.inwaishe.app.http.PreferencesCookieStore;
 import com.inwaishe.app.ui.AboutUsActivity;
 import com.inwaishe.app.ui.LoginActivity;
 import com.inwaishe.app.ui.MyApplication;
+import com.inwaishe.app.ui.SettingActivity;
 import com.inwaishe.app.widget.SettingItemTag;
 import com.tencent.bugly.crashreport.CrashReport;
 
@@ -46,7 +47,7 @@ import static com.inwaishe.app.common.CommonData.REQUESTCODE_LOGIN;
 public class CenterPagerFragment extends LazyFragment {
     public static final String TAG = "CenterPagerFragment";
 
-    private SettingItemTag mStNightModel,mStAboutUs;
+    private SettingItemTag mStNightModel,mStAboutUs,mStSetting,mStCollections;
     private ImageView mIvUsrIcon,mIvUsrIconNoLogin;
     private Button mBtnLogin,mBtnLoginOut;
     private TextView mTvUserStatus;
@@ -113,6 +114,8 @@ public class CenterPagerFragment extends LazyFragment {
 
         mStNightModel = (SettingItemTag) rootview.findViewById(R.id.stNightModel);
         mStAboutUs = (SettingItemTag) rootview.findViewById(R.id.stAboutUs);
+        mStSetting = (SettingItemTag) rootview.findViewById(R.id.stSetting);
+        mStCollections = (SettingItemTag) rootview.findViewById(R.id.stCollections);
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MyApplication.con);
         boolean isNight = sharedPreferences.getBoolean("THEME_NIGHT",false);
         mStNightModel.setRightSwitchState(isNight);
@@ -221,6 +224,14 @@ public class CenterPagerFragment extends LazyFragment {
             public void click(boolean isChecked) {
                 startActivity(new Intent(getActivity(), AboutUsActivity.class));
                 Toast.makeText(getActivity(),"关于我们",Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        mStSetting.setmOnLSettingItemClick(new SettingItemTag.OnLSettingItemClick() {
+            @Override
+            public void click(boolean isChecked) {
+                Intent it = new Intent(getActivity(),SettingActivity.class);
+                startActivity(it);
             }
         });
 

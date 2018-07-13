@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bgcolor">
+    android:orientation="vertical"
+    android:background="@color/itembg"
+    tools:context="com.inwaishe.app.ui.SettingActivity">
+
     <View
         android:id="@+id/statusBar"
         android:layout_width="match_parent"
@@ -34,7 +37,7 @@
             android:layout_width="0dp"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="关于INWAISHE"
+            android:text="设置"
             android:maxLines="1"
             android:textColor="@color/itemTextDate"
             android:textSize="@dimen/default_medium_text_size"
@@ -48,40 +51,41 @@
             android:visibility="invisible"
             app:srcCompat="@drawable/ic_fontsize"/>
     </LinearLayout>
-    <RelativeLayout
+    <View
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="2px"
+        android:background="@color/bgcolor"
+        />
 
-        <ImageView
-            android:id="@+id/logo"
-            android:layout_marginTop="100dp"
-            android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/colorAccent"
-            android:src="@mipmap/logo"/>
+    <com.inwaishe.app.widget.SettingItemTag
+        android:id="@+id/stClearCache"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:leftText="清除缓存"
+        app:rightText="0M"
+        app:leftIcon="@null"
+        app:rightStyle="iconShow"
+        />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:layout_marginLeft="20dp"
+        android:background="@color/bgcolor"
+        />
 
-        <TextView
-            android:layout_margin="20dp"
-            android:layout_below="@id/logo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/appdes"
-            android:textSize="@dimen/default_medium_text_size"
-            android:autoLink="web"
-            android:textColor="@color/itemTextDate"/>
-
-        <TextView
-            android:id="@+id/tvVersion"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="V1.0.0"
-            android:layout_marginBottom="50dp"
-            android:textSize="@dimen/default_medium_text_size"
-            android:textColor="@color/itemTextDate"/>
-
-    </RelativeLayout>
+    <com.inwaishe.app.widget.SettingItemTag
+        android:id="@+id/stShareApp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:leftText="分享APP"
+        app:leftIcon="@null"
+        app:rightStyle="iconHide"
+        />
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="2px"
+        android:layout_marginLeft="20dp"
+        android:background="@color/bgcolor"
+        />
 
 </LinearLayout>

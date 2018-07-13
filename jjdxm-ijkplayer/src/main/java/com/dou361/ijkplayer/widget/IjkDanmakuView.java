@@ -80,6 +80,7 @@ public class IjkDanmakuView extends FrameLayout {
     private BiliDanmukuParser mDanmakuParser;//xml 弹幕解析器
     private HashMap<Integer, Integer> maxLinesPair;// 弹幕最大行数
     private HashMap<Integer, Boolean> overlappingEnablePair;// 设置是否重叠
+    private String mUrl;//弹幕地址
 
     private BaseCacheStuffer.Proxy mCacheStufferAdapter = new BaseCacheStuffer.Proxy() {
 
@@ -139,7 +140,7 @@ public class IjkDanmakuView extends FrameLayout {
     private DrawHandler.Callback mCallBack = new DrawHandler.Callback() {
         @Override
         public void prepared() {
-            mDanmakuRenderView.start();
+            //mDanmakuRenderView.start();
         }
 
         @Override
@@ -233,10 +234,34 @@ public class IjkDanmakuView extends FrameLayout {
      * @param ms
      */
     public void seekTo(long ms){
-        try {
-            mDanmakuRenderView.seekTo(ms);
-        }catch (Exception e){
-            mDanmakuRenderView.start();
+        if(ms == 0){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        mDanmakuLoader = DanmakuLoaderFactory.create(DanmakuLoaderFactory.TAG_BILI);
+                        URL url = new URL(mUrl);//获得url对象
+                        HttpURLConnection conn = (HttpURLConnection)url.openConnection();  //创建URLConnection连接
+                        conn.setReadTimeout(5*1000);
+                        conn.setRequestMethod("GET");
+                        conn.setRequestProperty("Charset", "UTF-8");
+                        InputStream inStream = conn.getInputStream();
+                        mDanmakuLoader.load(new InflaterInputStream(inStream,new Inflater(true)));
+                        mDanmakuParser = new BiliDanmukuParser();
+                        IDataSource so = mDanmakuLoader.getDataSource();
+                        mDanmakuParser.load(so);
+                        mDanmakuRenderView.prepare(mDanmakuParser,mDanmakuContext);
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
+                }
+            }).start();
+        }else{
+            try {
+                mDanmakuRenderView.seekTo(ms);
+            }catch (Exception e){
+                //mDanmakuRenderView.start();
+            }
         }
     }
     /**
@@ -297,7 +322,7 @@ public class IjkDanmakuView extends FrameLayout {
         // 设置是否禁止重叠
         overlappingEnablePair = new HashMap<>();
         overlappingEnablePair.put(BaseDanmaku.TYPE_SCROLL_LR, true);
-        overlappingEnablePair.put(BaseDanmaku.TYPE_FIX_BOTTOM, true);
+        overlappingEnablePair.put(BaseDanmaku.TYPE_SCROLL_RL,true);
         mDanmakuContext.setDanmakuStyle(IDisplayer.DANMAKU_STYLE_STROKEN,mDanmakuStroken)
                 .setDuplicateMergingEnabled(true)//是否启用合并重复弹幕
                 .setScrollSpeedFactor(mDamakuSpeed)//设置弹幕滚动速度系数,只对滚动弹幕有效
@@ -318,28 +343,7 @@ public class IjkDanmakuView extends FrameLayout {
      * @param damakuUrl
      */
     public void setBilibiliDanmukuDataSource(final String damakuUrl){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    mDanmakuLoader = DanmakuLoaderFactory.create(DanmakuLoaderFactory.TAG_BILI);
-                    URL url = new URL(damakuUrl);//获得url对象
-                    HttpURLConnection conn = (HttpURLConnection)url.openConnection();  //创建URLConnection连接
-                    conn.setReadTimeout(5*1000);
-                    conn.setRequestMethod("GET");
-                    conn.setRequestProperty("Charset", "UTF-8");
-                    InputStream inStream = conn.getInputStream();
-                    mDanmakuLoader.load(new InflaterInputStream(inStream,new Inflater(true)));
-                    mDanmakuParser = new BiliDanmukuParser();
-                    IDataSource so = mDanmakuLoader.getDataSource();
-                    mDanmakuParser.load(so);
-                    mDanmakuRenderView.prepare(mDanmakuParser,mDanmakuContext);
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-
+        mUrl = damakuUrl;
     }
     /**
      * 渲染danmuview

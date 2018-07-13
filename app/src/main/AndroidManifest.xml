@@ -47,8 +47,8 @@
 
         <activity
             android:name=".ui.ArcDetaileActivity"
-            android:hardwareAccelerated="true"
             android:configChanges="orientation|keyboardHidden|screenSize"
+            android:hardwareAccelerated="true"
             android:screenOrientation="portrait" />
         <activity android:name=".ui.test.TestActivity" />
         <activity
@@ -64,7 +64,8 @@
         <activity android:name=".ui.display.DisplayActivity" />
         <activity android:name=".ui.PhotoCenterActivity" />
         <activity android:name=".ui.display.ImageShowActivity" />
-        <activity android:name=".ui.SearchResultActivity"></activity>
+        <activity android:name=".ui.SearchResultActivity" />
+        <activity android:name=".ui.SettingActivity"></activity>
     </application>
 
 </manifest>

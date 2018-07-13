@@ -13,6 +13,7 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.inwaishe.app.R;
 import com.inwaishe.app.ui.MyApplication;
 import com.tencent.mm.opensdk.modelmsg.SendMessageToWX;
 import com.tencent.mm.opensdk.modelmsg.WXImageObject;
@@ -163,7 +164,12 @@ public class AppUtils {
         wxMediaMessage.title = webPageTitle;
         wxMediaMessage.description = webPageDesc;
         wxMediaMessage.mediaObject = wxWebpageObject;
-        Bitmap thumbBmp = Bitmap.createScaledBitmap(getBitmapFrowView(imageView), 200, 200, true);
+        Bitmap thumbBmp = null;
+        if(imageView == null){
+            thumbBmp = BitmapFactory.decodeResource(context.getResources(), R.mipmap.logo);
+        }else{
+            thumbBmp = Bitmap.createScaledBitmap(getBitmapFrowView(imageView), 200, 200, true);
+        }
         wxMediaMessage.setThumbImage(thumbBmp);
         thumbBmp.recycle();
         SendMessageToWX.Req req = new SendMessageToWX.Req();
@@ -171,6 +177,12 @@ public class AppUtils {
         req.message = wxMediaMessage;
         req.scene = SendMessageToWX.Req.WXSceneTimeline;
         api.sendReq(req);
+
+    }
+
+    public static void shareWxImageToWxFriends(Context context){
+        IWXAPI api = WXAPIFactory.createWXAPI(context,"wx2192cbd952fd8dce");
+        WXImageObject wxImageObject = new WXImageObject();
 
     }
 
@@ -192,7 +204,12 @@ public class AppUtils {
         wxMediaMessage.title = webPageTitle;
         wxMediaMessage.description = webPageDesc;
         wxMediaMessage.mediaObject = wxWebpageObject;
-        Bitmap thumbBmp = Bitmap.createScaledBitmap(getBitmapFrowView(imageView), 200, 200, true);
+        Bitmap thumbBmp = null;
+        if(imageView == null){
+            thumbBmp = BitmapFactory.decodeResource(context.getResources(), R.mipmap.logo);
+        }else{
+            thumbBmp = Bitmap.createScaledBitmap(getBitmapFrowView(imageView), 200, 200, true);
+        }
         wxMediaMessage.setThumbImage(thumbBmp);
         thumbBmp.recycle();
         SendMessageToWX.Req req = new SendMessageToWX.Req();
